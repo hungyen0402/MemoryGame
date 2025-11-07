@@ -72,7 +72,7 @@ public class PlayerDAO {
         String updateWinnersql = "UPDATE Player SET totalWins = totalWins + 1 WHERE id = ?"; 
 
         Connection conn = null; 
-        try (
+        try {
             conn = DatabaseConnector.getConnection(); 
             conn.setAutoCommit(false); 
             
@@ -102,7 +102,7 @@ public class PlayerDAO {
 
             conn.commit();
             System.out.println("Lưu trận đấu thành công: " + player1.getUsername() + " vs " + player2.getUsername());
-        ) catch (SQLException e) {
+        } catch (SQLException e) {
             System.err.println("Lỗi khi lưu kết quả trận đấu! Đang rollback...");
             e.printStackTrace();
             // Rollback nếu có lỗi

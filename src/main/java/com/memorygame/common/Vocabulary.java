@@ -5,10 +5,10 @@ public class Vocabulary {
     private String phrase; 
     private int length; 
 
-    public Vocabulary(int id, int length, String phrase) {
+    public Vocabulary(int id, String phrase, int length) {
         this.id = id;
-        this.length = length;
         this.phrase = phrase;
+        this.length = length;
     }
 
     public int getId() {

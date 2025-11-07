@@ -7,7 +7,7 @@ public class Player {
     private int totalWins; 
     private PlayerStatus status; 
 
-    public Player(int id, String passwordHash, PlayerStatus status, int totalWins, String username) {
+    public Player(int id, String username, String passwordHash, int totalWins, PlayerStatus status) {
         this.id = id;
         this.passwordHash = passwordHash;
         this.status = status;
