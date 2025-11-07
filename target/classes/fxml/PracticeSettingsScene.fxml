@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="vn.memorygame.client.controller.PracticeSettingsController"
+            style="-fx-background-color: #f0f2f5; -fx-font-family: 'Roboto', 'Segoe UI';">
+
+    <center>
+        <VBox alignment="CENTER" spacing="35" style="-fx-padding: 60 0;">
+            
+            <Label text="⚙️ Cài Đặt Luyện Tập" 
+                   style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #1f2937;"/>
+
+            <VBox spacing="30" alignment="CENTER_LEFT" maxWidth="500"
+                  style="-fx-background-color: #ffffff; -fx-border-color: #e5e7eb; -fx-border-width: 1; 
+                          -fx-border-radius: 20; -fx-background-radius: 20;
+                          -fx-padding: 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0.1, 0, 5);">
+
+                <VBox spacing="10" alignment="CENTER_LEFT" maxWidth="420">
+                    <Label text="💡 Thời Gian Ghi Nhớ (giây):" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Slider fx:id="sldThinkTime" min="1" max="10" value="3"
+                                showTickLabels="false" showTickMarks="false"
+                                majorTickUnit="1" blockIncrement="1"
+                                style="-fx-pref-width: 350;"/>
+                        <Label fx:id="lblThinkTimeValue" text="3s" 
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #10b981; -fx-min-width: 30;"/>
+                    </HBox>
+                </VBox>
+                
+                <Separator style="-fx-background-color: #f3f4f6; -fx-pref-height: 1;"/>
+
+                <VBox spacing="10" alignment="CENTER_LEFT" maxWidth="420">
+                    <Label text="🔁 Số Vòng Thử Thách:" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Slider fx:id="sldRounds" min="3" max="20" value="5"
+                                showTickLabels="false" showTickMarks="false"
+                                majorTickUnit="1" blockIncrement="1"
+                                style="-fx-pref-width: 350;"/>
+                        <Label fx:id="lblRoundsValue" text="5" 
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #f59e0b; -fx-min-width: 30;"/>
+                    </HBox>
+                </VBox>
+
+                <Separator style="-fx-background-color: #f3f4f6; -fx-pref-height: 1;"/>
+
+                <VBox spacing="10" alignment="CENTER_LEFT" maxWidth="420">
+                    <Label text="⏳ Thời Gian Trả Lời (giây):" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Slider fx:id="sldWaitTime" min="5" max="30" value="10"
+                                showTickLabels="false" showTickMarks="false"
+                                majorTickUnit="5" blockIncrement="1"
+                                style="-fx-pref-width: 350;"/>
+                        <Label fx:id="lblWaitTimeValue" text="10s" 
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ef4444; -fx-min-width: 30;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="30" style="-fx-padding: 10 0;">
+                <Button text="🚀 Bắt Đầu Luyện Tập"
+                        onAction="#startPractice"
+                        style="-fx-background-color: #7c3aed; -fx-text-fill: white; -fx-font-size: 18px; 
+                                -fx-font-weight: 700; -fx-background-radius: 15; -fx-padding: 15 35; -fx-cursor: hand;
+                                -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.5), 15, 0.2, 0, 5);"/>
+                
+                <Button text="↩ Quay Lại"
+                        onAction="#backToMenu"
+                        style="-fx-background-color: #9ca3af; -fx-text-fill: white; -fx-font-size: 18px; 
+                                -fx-font-weight: 600; -fx-background-radius: 15; -fx-padding: 15 35; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

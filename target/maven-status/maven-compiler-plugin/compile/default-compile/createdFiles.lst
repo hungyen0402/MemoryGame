@@ -1,0 +1,11 @@
+com\memorygame\client\controller\PracticeGameController.class
+com\memorygame\client\controller\PracticeSettingsController.class
+com\memorygame\client\controller\ChallengeConfigController.class
+com\memorygame\client\controller\ChallengePlayController.class
+com\memorygame\client\controller\ChallengeGameController.class
+com\memorygame\client\controller\LeaderboardController.class
+com\memorygame\client\controller\RegisterController.class
+com\memorygame\client\controller\MainMenuController.class
+com\memorygame\client\controller\LoginController.class
+com\memorygame\client\ClientApp.class
+com\memorygame\client\controller\LobbyController.class
