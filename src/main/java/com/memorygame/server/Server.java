@@ -2,8 +2,7 @@ package com.memorygame.server;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.memorygame.common.Player;
+import com.memorygame.common.Player; 
 
 public class Server {
     /**Server Singleton */
