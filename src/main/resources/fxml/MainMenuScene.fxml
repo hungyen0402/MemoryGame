@@ -9,7 +9,7 @@
 <VBox style="-fx-background-color: #f7f9fb; -fx-font-family: 'Roboto', 'Segoe UI';" 
       xmlns="http://javafx.com/javafx/21" 
       xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="vn.memorygame.client.controller.MainMenuController"
+      fx:controller="com.memorygame.client.controller.MainMenuController"
       alignment="TOP_CENTER">
 
     <VBox alignment="TOP_CENTER" spacing="50" style="-fx-padding: 60 40 40 40;" maxWidth="850">
