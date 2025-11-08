@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.memorygame.common.GameSession;
-import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus; 
 
@@ -76,7 +75,8 @@ public class Server {
                 // Gán player cho ClientHandler
                 client.setPlayer(player);
                 // Gửi message tới client thông báo đăng nhập thành công 
-                client.sendMessage(new Message("LOGIN SUCCESS", player)); 
+                // (cái này là việc của ClienHandler)
+                // client.sendMessage(new Message("LOGIN_SUCCESS", player)); 
                 // Thông báo tới các user khác
                 broadcastOnlineList(); 
 
@@ -86,7 +86,7 @@ public class Server {
         }
         System.out.println("Đăng nhập thất bại cho user: " + userName);
         // Gửi message thông báo Login thất bại tới client 
-        client.sendMessage(new Message("LOGIN FAIL", "SAI NAME HOẶC MẬT KHẨU"));
+        // client.sendMessage(new Message("LOGIN_FAIL", "SAI NAME HOẶC MẬT KHẨU"));
         return false;  
     }
 

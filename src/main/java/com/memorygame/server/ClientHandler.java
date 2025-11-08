@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
@@ -32,11 +33,28 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        
+        try {
+            Message clientMessage; 
+            while ((clientMessage = (Message) ois.readObject()) != null) {
+                processMessage(clientMessage); 
+            }
+        } catch (SocketException e) {
+            System.out.println("Client đã ngắt kết nối: " + socket.getInetAddress()); 
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            // Dọn dẹp: ĐÓNG SOCKET, XÓA KHỎI MAP
+
+        }
     }
 
     public synchronized void sendMessage(Message message) {
-
+        try {
+            oos.writeObject(message);
+            oos.flush(); 
+        } catch (IOException e) {
+            e.printStackTrace(); 
+        }
     }
     // Hàm này dùng khi user đăng nhập thành công, 
     //Server sẽ gọi hàm này để gán player cho Clienthandler
@@ -44,6 +62,36 @@ public class ClientHandler implements Runnable {
         this.player = player; 
     }
     public void processMessage(Message message) {
-        
+        String type = message.getType(); 
+
+        switch (type) {
+            case "LOGIN" -> {
+                // Lúc này là user đang đăng nhập,
+                // Client gửi 1 mảng String[] {username, password}
+                try {
+                    String[] credentials = (String[]) message.getPayload();
+                    String username = credentials[0];
+                    String password = credentials[1];
+                    
+                    // Gọi hàm của Server để xử lý
+                    boolean loginSuccess = Server.getInstance().handleLogin(username, password, this); 
+                    if (loginSuccess) {
+                        sendMessage(new Message("LOGIN_SUCCESS", this.player)); 
+                    } else {
+                        sendMessage(new Message("FAIL_SUCCESS", this.player)); 
+                    }
+                } catch (Exception e) {
+                    sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập (dữ liệu từ user gửi)")); 
+                }
+            } 
+            case "INVITE" -> {
+                // lÀM SAU 
+                break; 
+            }
+            case "SUBMIT_ANSWER" -> {
+                // làm sau
+                break; 
+            }
+        }
     }
 }
