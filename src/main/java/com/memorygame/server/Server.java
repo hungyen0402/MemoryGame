@@ -3,12 +3,15 @@ package com.memorygame.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.memorygame.common.GameSession;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus; 
 
@@ -99,7 +102,13 @@ public class Server {
     }
 
     public void broadcastOnlineList() {
-        
+        System.out.println("Đang cập nhật và gửi danh sách online ...."); 
+
+        List<Player> onlinePlayerList = new ArrayList<>(handlerToPlayer.values());
+        Message message = new Message("S_ONLINE_LIST", onlinePlayerList); 
+        for (ClientHandler handler : handlerToPlayer.keySet()) {
+            handler.sendMessage(message);
+        }
     }
     
 }
