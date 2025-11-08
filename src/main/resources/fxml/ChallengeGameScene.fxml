@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #f0f2f5; -fx-font-family: 'Roboto', 'Segoe UI';" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vn.memorygame.client.controller.ChallengeGameController">
+<BorderPane style="-fx-background-color: #f0f2f5; -fx-font-family: 'Roboto', 'Segoe UI';" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memorygame.client.controller.ChallengeGameController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="30" style="-fx-background-color: white; -fx-padding: 15 40; -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;">

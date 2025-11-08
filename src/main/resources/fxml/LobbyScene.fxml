@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="vn.memorygame.client.controller.LobbyController"
+      fx:controller="com.memorygame.client.controller.LobbyController"
       alignment="TOP_CENTER"
       spacing="35"
       style="-fx-background-color: #f0f2f5; -fx-padding: 50 40 40 40; -fx-font-family: 'Roboto', 'Segoe UI';">
@@ -26,8 +26,7 @@
                               -fx-border-color: #d1d5db; -fx-border-width: 1; -fx-font-size: 16px;
                               -fx-padding: 12 18; -fx-background-color: #f9fafb;"/>
             
-            <Button text="🔍 Tìm Kiếm"
-                    onAction="#handleSearchButton"
+            <Button text="Tìm Kiếm"
                     style="-fx-background-color: #e0f2fe; -fx-text-fill: #0c4a6e;
                            -fx-font-size: 16px; -fx-font-weight: 600; -fx-background-radius: 15;
                            -fx-padding: 12 25; -fx-cursor: hand;"/>
@@ -73,8 +72,7 @@
             </columnResizePolicy>
         </TableView>
 
-        <Button text="↩ Quay Lại Menu Chính"
-                onAction="#backToMenu"
+        <Button text="↩ Quay Lại"
                 style="-fx-background-color: #9ca3af; -fx-text-fill: white; -fx-font-size: 16px; 
                        -fx-font-weight: 600; -fx-background-radius: 12; -fx-padding: 10 25; -fx-cursor: hand;"/>
 

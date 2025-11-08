@@ -1,6 +1,9 @@
+// src/main/java/com/memorygame/common/Message.java
 package com.memorygame.common;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
     private final String type;
     private final Object payload;
 
@@ -15,5 +18,10 @@ public class Message {
 
     public Object getPayload() {
         return payload;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{type='" + type + "', payload=" + payload + "}";
     }
 }

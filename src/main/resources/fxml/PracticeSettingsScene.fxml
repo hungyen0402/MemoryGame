@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="vn.memorygame.client.controller.PracticeSettingsController"
+            fx:controller="com.memorygame.client.controller.PracticeSettingsController"
             style="-fx-background-color: #f0f2f5; -fx-font-family: 'Roboto', 'Segoe UI';">
 
     <center>

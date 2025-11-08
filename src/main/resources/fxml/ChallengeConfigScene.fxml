@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #f7f9fb; -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vn.memorygame.client.controller.PracticeSettingsController">
+<BorderPane style="-fx-background-color: #f7f9fb; -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memorygame.client.controller.PracticeSettingsController">
 
     <center>
         <VBox alignment="CENTER" spacing="30" style="-fx-padding: 50 20;">

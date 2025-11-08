@@ -3,7 +3,7 @@ from docx import Document
 import re  # <-- 1. Chúng ta cần thư viện 're' (Regular Expression)
 import config
 import sys
-
+# Cách 2: Dùng codec utf-8
 print("Bắt đầu kịch bản nạp từ vựng (Dùng PyMySQL) [V2 - Sửa lỗi logic]...")
 
 mydb = None
