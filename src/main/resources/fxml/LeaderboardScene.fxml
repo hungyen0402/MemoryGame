@@ -4,11 +4,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.Priority?>
-<?import javafx.scene.layout.StackPane?>
 
 <VBox alignment="TOP_CENTER" spacing="30"
       style="-fx-background-color: #f0f2f5; -fx-padding: 50 40 40 40; -fx-font-family: 'Roboto', 'Segoe UI';"
@@ -16,24 +16,53 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.memorygame.client.controller.LeaderboardController">
 
+    <!-- TIÊU ĐỀ + NÚT TẢI LẠI + QUAY LẠI -->
     <HBox alignment="CENTER_LEFT" spacing="15" maxWidth="850">
-        <Label text="👑 Bảng Xếp Hạng Thách Đấu"
+        <Label text="Bảng Xếp Hạng Thách Đấu"
                style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #1e293b;" />
         
         <HBox HBox.hgrow="ALWAYS" />
-        
+
+        <!-- NÚT TẢI LẠI -->
         <Button fx:id="btnReload"
                 onAction="#reloadLeaderboard"
-                text="⟳ Tải Lại"
+                text="Tải Lại"
                 style="-fx-background-color: #e0f2fe;
                        -fx-font-size: 16px;
                        -fx-font-weight: 600;
                        -fx-text-fill: #0c4a6e;
                        -fx-background-radius: 10;
                        -fx-padding: 10 20;
-                       -fx-cursor: hand;" />
+                       -fx-cursor: hand;">
+            <graphic>
+                <Label text="⟳" style="-fx-font-size: 18px;" />
+            </graphic>
+        </Button>
+
+        <!-- NÚT QUAY LẠI (MỚI) -->
+        <Button fx:id="btnBack"
+                onAction="#goBack"
+                style="-fx-background-color: #fef3c7;
+                       -fx-font-size: 16px;
+                       -fx-font-weight: 600;
+                       -fx-text-fill: #92400e;
+                       -fx-background-radius: 10;
+                       -fx-padding: 10 24;
+                       -fx-cursor: hand;
+                       -fx-border-color: #f59e0b;
+                       -fx-border-width: 2;
+                       -fx-border-radius: 10;
+                       -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);">
+            <graphic>
+                <Label text="Quay Lại" style="-fx-font-size: 20px;" />
+            </graphic>
+            <tooltip>
+                <Tooltip text="Quay lại menu chính" />
+            </tooltip>
+        </Button>
     </HBox>
 
+    <!-- BẢNG XẾP HẠNG -->
     <TableView fx:id="tblRank"
                VBox.vgrow="ALWAYS"
                minHeight="500"
@@ -46,10 +75,10 @@
                       -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
         
         <columns>
-            <TableColumn fx:id="colRank" text="⭐ Hạng" prefWidth="120" 
+            <TableColumn fx:id="colRank" text="Hạng" prefWidth="120" 
                          style="-fx-alignment: CENTER; -fx-font-weight: 700; -fx-text-fill: #7c3aed;"/>
-            <TableColumn fx:id="colPlayer" text="👤 Người chơi" prefWidth="480" />
-            <TableColumn fx:id="colWins" text="✅ Tỷ lệ Thắng" prefWidth="250" 
+            <TableColumn fx:id="colPlayer" text="Người chơi" prefWidth="480" />
+            <TableColumn fx:id="colWins" text="Tỷ lệ Thắng" prefWidth="250" 
                          style="-fx-alignment: CENTER; -fx-font-weight: 600; -fx-text-fill: #10b981;"/>
         </columns>
         
@@ -58,8 +87,8 @@
         </columnResizePolicy>
     </TableView>
 
+    <!-- PHÂN TRANG -->
     <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10 0;">
-        
         <Button text="« Trước" onAction="#prevPage"
                 style="-fx-background-color: #e2e8f0;
                        -fx-text-fill: #475569;
