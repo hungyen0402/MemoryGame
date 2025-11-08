@@ -30,7 +30,7 @@ public class ClientHandler implements Runnable {
             e.printStackTrace(); 
         }
     }
-
+    // nhận message rồi gọi hàm processMessage để xử lý message (listerner function)
     @Override
     public void run() {
         try {
@@ -61,9 +61,10 @@ public class ClientHandler implements Runnable {
     public void setPlayer(Player player) {
         this.player = player; 
     }
+    // HÀM XỬ LÝ CÁC MESSAGE NHẬN ĐƯỢC 
     public void processMessage(Message message) {
         String type = message.getType(); 
-
+        
         switch (type) {
             case "LOGIN" -> {
                 // Lúc này là user đang đăng nhập,

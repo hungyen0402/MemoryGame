@@ -49,7 +49,7 @@
             <TableColumn fx:id="colRank" text="⭐ Hạng" prefWidth="120" 
                          style="-fx-alignment: CENTER; -fx-font-weight: 700; -fx-text-fill: #7c3aed;"/>
             <TableColumn fx:id="colPlayer" text="👤 Người chơi" prefWidth="480" />
-            <TableColumn fx:id="colWins" text="✅ Tỷ lệ Thắng" prefWidth="250" 
+            <TableColumn fx:id="colWins" text="✅ Số trận Thắng" prefWidth="250" 
                          style="-fx-alignment: CENTER; -fx-font-weight: 600; -fx-text-fill: #10b981;"/>
         </columns>
         

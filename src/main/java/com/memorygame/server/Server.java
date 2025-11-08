@@ -36,7 +36,7 @@ public class Server {
     public static Server getInstance() {
         return instance;
     }
-
+    // Tạo clientHandler instance, chưa biết player sở hữu 
     public void startServer() {
         System.out.println("SERVER đang khởi động tại cổng " + PORT + "..."); 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -62,7 +62,7 @@ public class Server {
 
     public synchronized boolean handleLogin(String userName, String password, ClientHandler client) {
         Player player = playerDAO.getPlayerByUsername(userName); 
-
+        client.sendMessage(new Message("LOGIN", "USER ĐĂNG NHẬP"));
         if (player != null) {
             // Kiểm tra mật khẩu
             if (BCrypt.checkpw(password, player.getPasswordHash())) {
@@ -87,7 +87,7 @@ public class Server {
             }
             System.out.println("User nhập sai mật khẩu"); 
         }
-        System.out.println("Đăng nhập thất bại cho user: " + userName);
+        System.out.println("Đăng nhập thất bại cho user: " + userName + " Do nhập sai userName");
         // Gửi message thông báo Login thất bại tới client 
         // client.sendMessage(new Message("LOGIN_FAIL", "SAI NAME HOẶC MẬT KHẨU"));
         return false;  
@@ -100,7 +100,7 @@ public class Server {
     public void createGameSession(Player player1, Player player2) {
         
     }
-
+    // Gửi message 
     public void broadcastOnlineList() {
         System.out.println("Đang cập nhật và gửi danh sách online ...."); 
 
