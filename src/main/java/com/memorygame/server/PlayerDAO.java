@@ -6,8 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.sql.SQLException;
+
 import com.memorygame.common.GameSession;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus;
@@ -124,6 +123,19 @@ public class PlayerDAO {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+    // Method 3: Update player - cập nhật trạng thái 
+    public void updatePlayerStatus(int PlayerId, PlayerStatus status) {
+        String sql = "UPDATE Player SET status = ? WHERE id = ?"; 
+        try (Connection conn = DatabaseConnector.getConnection();
+            PreparedStatement pstm = conn.prepareStatement(sql)) {
+            
+            pstm.setString(1, status.name()); 
+            pstm.setInt(2, PlayerId); 
+            pstm.executeUpdate(); 
+        } catch (Exception e) {
+            e.printStackTrace(); 
         }
     }
 }

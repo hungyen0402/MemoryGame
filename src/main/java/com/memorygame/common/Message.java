@@ -8,4 +8,17 @@ public class Message {
         this.type = null;
         this.payload = null;
     }
+
+    public Message(String type, Object payload) {
+        this.payload = payload;
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Object getPayload() {
+        return payload;
+    }
 }
