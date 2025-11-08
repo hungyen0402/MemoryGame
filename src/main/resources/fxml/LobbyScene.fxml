@@ -26,7 +26,8 @@
                               -fx-border-color: #d1d5db; -fx-border-width: 1; -fx-font-size: 16px;
                               -fx-padding: 12 18; -fx-background-color: #f9fafb;"/>
             
-            <Button text="⟳ Tải Lại"
+            <Button text="🔍 Tìm Kiếm"
+                    onAction="#handleSearchButton"
                     style="-fx-background-color: #e0f2fe; -fx-text-fill: #0c4a6e;
                            -fx-font-size: 16px; -fx-font-weight: 600; -fx-background-radius: 15;
                            -fx-padding: 12 25; -fx-cursor: hand;"/>
@@ -42,9 +43,9 @@
                            -fx-font-weight: 700; -fx-background-radius: 10;
                            -fx-pref-width: 275; -fx-padding: 10 0; -fx-cursor: hand;"/>
                            
-            <Button fx:id="btnFriends"
+            <Button fx:id="btnBusy"
                     text="🔴 Đang Bận"
-                    onAction="#showFriends"
+                    onAction="#showBusyPlayers"
                     style="-fx-background-color: transparent; -fx-text-fill: #4b5563;
                            -fx-font-weight: 700; -fx-background-radius: 10;
                            -fx-pref-width: 275; -fx-padding: 10 0; -fx-cursor: hand;"/>
@@ -73,6 +74,7 @@
         </TableView>
 
         <Button text="↩ Quay Lại Menu Chính"
+                onAction="#backToMenu"
                 style="-fx-background-color: #9ca3af; -fx-text-fill: white; -fx-font-size: 16px; 
                        -fx-font-weight: 600; -fx-background-radius: 12; -fx-padding: 10 25; -fx-cursor: hand;"/>
 

@@ -21,7 +21,9 @@ public class MainMenuController {
         lblTotalWins.setText("0");
     }
 
-    /**Cần truyền NetworkClient + tham chiếu đến đối tượng quản lý chung (SceneManager) vào đây */
+    /**Cần truyền NetworkClient + tham chiếu đến đối tượng quản lý chung (SceneManager) vào đây
+     * Gọi bởi SceneManager sau khi tải FXML. Tương tự với các controller khác
+    */
     public void setupController() {
 
     }
