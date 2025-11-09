@@ -124,7 +124,9 @@ public class SceneManager implements NetworkClient.MessageListener {
         if (currentController instanceof LoginController c) {
             switch (type) {
                 case "S_LOGIN_RESPONSE" -> {
-                    Boolean success = (Boolean) payload;
+                    Object[] response = (Object[]) payload;
+                    Boolean success = (Boolean) response[0];
+                    Player player = (Player) response[1];
 
                     if (Boolean.TRUE.equals(success)) {
                         c.onLoginSuccess();
