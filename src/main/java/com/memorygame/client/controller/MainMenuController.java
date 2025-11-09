@@ -23,8 +23,7 @@ public class MainMenuController {
     public void initialize() {
         lblOnlineCount.setText("0");
         lblTotalWins.setText("0");
-        Message message = new Message("C_ONLINE_COUNT", null); 
-        networkClient.sendMessage(message);
+
     }
 
     /**Cần truyền NetworkClient + tham chiếu đến đối tượng quản lý chung (SceneManager) vào đây
@@ -33,6 +32,8 @@ public class MainMenuController {
     public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
         this.sceneManager = sceneManager;
         this.networkClient = networkClient;
+        Message message = new Message("C_ONLINE_COUNT", null); 
+        networkClient.sendMessage(message);
     }
 
     @FXML

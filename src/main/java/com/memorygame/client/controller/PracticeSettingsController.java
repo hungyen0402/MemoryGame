@@ -62,7 +62,7 @@ public class PracticeSettingsController {
 
     @FXML
     private void startPractice() {
-
+        
     }
 
     @FXML

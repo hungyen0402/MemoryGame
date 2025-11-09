@@ -8,18 +8,35 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane style="-fx-background-color: #f0f2f5; -fx-font-family: 'Roboto', 'Segoe UI';" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.memorygame.client.controller.PracticeGameController">
+<BorderPane style="-fx-background-color: #f0f2f5; 
+                    -fx-font-family: 'Roboto', 'Segoe UI';" 
+            xmlns="http://javafx.com/javafx/25" 
+            xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.memorygame.client.controller.PracticeGameController">
 
     <center>
         <VBox alignment="CENTER" spacing="40" style="-fx-padding: 40 20;">
 
-            <Label style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #1f2937;" text="🎯 Màn Chơi Luyện Tập" />
+            <Label style="-fx-font-size: 32px; 
+                            -fx-font-weight: 800; 
+                            -fx-text-fill: #1f2937;" 
+                            text="🎯 Màn Chơi Luyện Tập" />
                    
-            <HBox alignment="CENTER" spacing="70" style="-fx-background-color: #ffffff; -fx-background-radius: 20; -fx-padding: 30 70;                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0.1, 0, 8); -fx-border-color: #e5e7eb; -fx-border-width: 1;">
+            <HBox alignment="CENTER" spacing="70" style="
+                    -fx-background-color: #ffffff; 
+                    -fx-background-radius: 20; 
+                    -fx-padding: 30 70;                           
+                    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0.1, 0, 8); 
+                    -fx-border-color: #e5e7eb; -fx-border-width: 1;">
 
                 <VBox alignment="CENTER" spacing="5">
-                    <Label style="-fx-text-fill: #6b7280; -fx-font-size: 15px; -fx-font-weight: 500;" text="Vòng Chơi" />
-                    <Label fx:id="lblRound" style="-fx-text-fill: #7c3aed; -fx-font-size: 30px; -fx-font-weight: 900;" text="01" />
+                    <Label style="-fx-text-fill: #6b7280; 
+                                    -fx-font-size: 15px; 
+                                    -fx-font-weight: 500;" text="Vòng Chơi" />
+                    <Label fx:id="lblRound" 
+                        style="-fx-text-fill: #7c3aed; 
+                                -fx-font-size: 30px; 
+                                -fx-font-weight: 900;" text="01" />
                 </VBox>
 
                 <VBox alignment="CENTER" spacing="5">

@@ -77,7 +77,9 @@ public class ClientHandler implements Runnable {
                     String username = credentials[0];
                     String password = credentials[1];
                     
-                    server.handleLogin(username, password, this);
+                    boolean login_success = server.handleLogin(username, password, this);
+                    Message message1 = new Message("S_LOGIN_RESPONSE", login_success);
+                    sendMessage(message1); 
                 } catch (Exception e) {
                     sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập (dữ liệu từ user gửi)")); 
                 }
@@ -92,12 +94,13 @@ public class ClientHandler implements Runnable {
             }
             case "C_SQL_PLAYER" -> {
                 List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby();
-                Message message1 = new Message("S_ONLINE_LIST", onlinePlayers); 
-                sendMessage(message1);
+                Message message2 = new Message("S_ONLINE_LIST", onlinePlayers); 
+                sendMessage(message2);
             }
             case "C_ONLINE_COUNT" -> {
                 int count = playerDAO.countPlayerOnline(); 
-                Message message2 = new Message("S_ONLINE_COUNT", count); 
+                Message message3 = new Message("S_ONLINE_COUNT", count); 
+                sendMessage(message3); 
             }
         }
     }
