@@ -103,6 +103,23 @@ public class ClientHandler implements Runnable {
                 Message message3 = new Message("S_ONLINE_COUNT", count); 
                 sendMessage(message3); 
             }
+            case "C_REGISTER" -> {
+                try {
+                    String[] credentials = (String[]) message.getPayload(); 
+                    String username = credentials[0]; 
+                    String password = credentials[1]; 
+
+                    boolean success = server.handleRegister(username, password); 
+
+                    if (success) {
+                        sendMessage(new Message("S_REGISTER_SUCCESS", null)); 
+                    } else {
+                        sendMessage(new Message("S_REGISTER_FAIL", "Tên người dùng đã tồn tại.")); 
+                    }
+                } catch (Exception e) {
+                    sendMessage(new Message("S_REGISTER_FAIL", "Lỗi dữ liệu đăng ký không hợp lệ")); 
+                }
+            }
         }
     }
 }

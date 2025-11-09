@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.memorygame.common.GameSession;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus;
@@ -187,5 +189,23 @@ public class PlayerDAO {
         }
 
         return count;
+    }
+    // Method 6: Tạo 1 user mới trong db 
+    public boolean createPlayer(String username, String plainTextPassword) {
+        String hashedPassword = BCrypt.hashpw(plainTextPassword, BCrypt.gensalt()); 
+
+        String sql  ="INSERT INTO Player (username, passwordHash, status) VALUES (?, ?, 'OFFLINE')"; 
+
+        try(Connection conn = DatabaseConnector.getConnection();
+            PreparedStatement pstm = conn.prepareStatement(sql)) {
+            pstm.setString(1, username); 
+            pstm.setString(2, hashedPassword); 
+
+            int rowAffected = pstm.executeUpdate(); 
+            return rowAffected > 0; // Trả về true nếu có 1 hàng bị ảnh hưởng (thêm thành công)
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tạo player: " + e.getMessage());
+            return false;
+        }
     }
 }

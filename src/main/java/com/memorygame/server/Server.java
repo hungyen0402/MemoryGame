@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.memorygame.common.GameSession;
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
@@ -63,7 +65,7 @@ public class Server {
         Player player = playerDAO.getPlayerByUsername(userName); 
         if (player != null) {
             // Kiểm tra mật khẩu
-            if (password.equals(player.getPasswordHash())) {
+            if (password.equals(player.getPasswordHash()) || BCrypt.checkpw(password, player.getPasswordHash())) {
                 System.out.println("Đăng nhập thành công cho user: " + userName);
                 
                 // Cập nhật status Player trong db 
@@ -89,6 +91,24 @@ public class Server {
         // Gửi message thông báo Login thất bại tới client 
         // client.sendMessage(new Message("LOGIN_FAIL", "SAI NAME HOẶC MẬT KHẨU"));
         return false;  
+    }
+
+    public synchronized boolean handleRegister(String username, String password) {
+        // Kiểm tra xem tên đã tồn tại chưa
+        if (playerDAO.getPlayerByUsername(username) != null) {
+            System.out.println("DANG KY THAT BAI: TEN " + username + " DA TON TAI"); 
+            return false; // Tên đã tồn tại 
+        }
+
+        // Nếu tên chưa tồn tại, gọi DAO để tạo mới
+        boolean success = playerDAO.createPlayer(username, password);
+
+        if (success) {
+            System.out.println("DANG KY THANH CONG CHO USER: " + username); 
+        } else {
+            System.out.println("DANG KY THAT BAI: LOI CSDL CHO USER: " + username); 
+        }
+        return success; 
     }
 
     public void handleInvite(Player inviter, String inviteUsername) {

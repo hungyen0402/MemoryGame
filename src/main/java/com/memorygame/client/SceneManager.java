@@ -170,7 +170,12 @@ public class SceneManager implements NetworkClient.MessageListener {
         
         else if (currentController instanceof RegisterController c) {
             switch (type) {
-                
+                case "S_REGISTER_SUCCESS" -> {
+                    c.onRegisterSuccess();
+                }
+                case "S_REGISTER_FAIL" -> {
+                    c.onRegisterFail((String) (payload));
+                }
             }
         }
         // (Các màn hình Practice không cần nhận tin nhắn)
