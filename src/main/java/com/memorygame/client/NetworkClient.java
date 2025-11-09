@@ -90,6 +90,11 @@ public class NetworkClient {
         catch (IOException e) { e.printStackTrace(); }
     }
 
+    public void logout() {
+        sendMessage(new Message("C_LOGOUT", null));
+        disconnect();
+    }
+
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
     }
