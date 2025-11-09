@@ -51,6 +51,14 @@ public class GameSession {
         return currentRounds;
     }
 
+    public long getWaitTimes() {
+        return this.waitTimes;
+    }
+
+    public long getDisplayTimes() {
+        return this.displayTimes;
+    }
+
     public Map<Player, Integer> getScores() {
         return scores;
     }

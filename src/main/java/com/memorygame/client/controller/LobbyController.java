@@ -172,7 +172,7 @@ public class LobbyController {
         colAction.setCellFactory(cellFactory);
     }
 
-    private void handleChallengePlayer(Player player) {
-
+    private void handleChallengePlayer(Player opponent) {
+        sceneManager.showChallengeConfigScene(opponent);
     }
 }
