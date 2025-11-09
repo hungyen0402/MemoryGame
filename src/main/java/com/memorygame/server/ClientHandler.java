@@ -46,8 +46,14 @@ public class ClientHandler implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
-            // Dọn dẹp: ĐÓNG SOCKET, XÓA KHỎI MAP
-
+            server.handleLogout(this);
+            try {
+                if (ois != null) ois.close();
+                if (oos != null) oos.close();
+                if (socket != null) socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -84,7 +90,14 @@ public class ClientHandler implements Runnable {
                 } catch (Exception e) {
                     sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập (dữ liệu từ user gửi)")); 
                 }
-            } 
+            }
+            case "C_LOGOUT" -> {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             case "INVITE" -> {
                 // lÀM SAU 
                 break; 

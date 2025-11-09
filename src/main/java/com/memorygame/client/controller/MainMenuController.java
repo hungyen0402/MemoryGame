@@ -53,7 +53,7 @@ public class MainMenuController {
 
     @FXML
     private void logout() {
-        // networkClient.logout();
+        networkClient.logout();
         sceneManager.showLoginScene();
     }
 

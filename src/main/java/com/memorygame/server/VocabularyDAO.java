@@ -8,9 +8,6 @@ import java.util.Set;
 import com.memorygame.common.Vocabulary;
 
 public class VocabularyDAO {
-    // Chức năng chính: Get random vocabulary từ database 
-    // Tránh trùng lặp vocabulary 
-
     public Vocabulary getRandomPhrase(Set<Integer> excludedIds) {
         StringBuilder sql = new StringBuilder("SELECT * FROM Vocabulary");
 

@@ -11,7 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.memorygame.common.GameSession;
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
-import com.memorygame.common.PlayerStatus; 
+import com.memorygame.common.PlayerStatus;
+import com.mysql.cj.xdevapi.Client;
 
 public class Server {
     /**Server Singleton */
@@ -106,6 +107,21 @@ public class Server {
         Message message = new Message("S_ONLINE_LIST", onlinePlayerList); 
         for (ClientHandler handler : handlerToPlayer.keySet()) {
             handler.sendMessage(message);
+        }
+    }
+
+    public void handleLogout(ClientHandler client) {
+        Player player = handlerToPlayer.get(client);
+        if (player != null) {
+            System.out.println("logout: " + player.getUsername());
+            playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.OFFLINE);;
+            onlinePlayers.remove(player.getUsername());
+            handlerToPlayer.remove(client);
+            broadcastOnlineList();
+        }
+        else{
+            System.out.println("Client chưa đăng nhập đã ngắt kết nối, chỉ đóng socket.");
+            handlerToPlayer.remove(client);
         }
     }
     // Get playerDAO
