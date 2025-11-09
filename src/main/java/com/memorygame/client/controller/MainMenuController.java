@@ -1,9 +1,8 @@
 package com.memorygame.client.controller;
 
-import java.util.List;
-
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
 import javafx.application.Platform;
@@ -24,6 +23,8 @@ public class MainMenuController {
     public void initialize() {
         lblOnlineCount.setText("0");
         lblTotalWins.setText("0");
+        Message message = new Message("C_ONLINE_COUNT", null); 
+        networkClient.sendMessage(message);
     }
 
     /**Cần truyền NetworkClient + tham chiếu đến đối tượng quản lý chung (SceneManager) vào đây
@@ -55,11 +56,9 @@ public class MainMenuController {
         sceneManager.showLoginScene();
     }
 
-    public void updateOnlineList(List<Player> players) {
-        int count = (players != null) ? players.size() : 0;
-        
+    public void updateOnlineCount(Integer count_players) {
         Platform.runLater(() -> {
-            lblOnlineCount.setText(String.valueOf(count));
+            lblOnlineCount.setText(String.valueOf(count_players));
         });
     }
 

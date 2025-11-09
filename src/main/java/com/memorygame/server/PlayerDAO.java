@@ -138,4 +138,54 @@ public class PlayerDAO {
             e.printStackTrace(); 
         }
     }
+    // Method 4: Truy vấn player - "Đổi lại" tại LobbyScene 
+    public List<Player> getOnlinePlayersForLobby() {
+        List<Player> onlinePlayers = new ArrayList<>();
+        String sql = "SELECT id, username, status FROM Player WHERE status = ? LIMIT 50"; 
+        
+        try (Connection conn = DatabaseConnector.getConnection();
+            PreparedStatement pstm = conn.prepareStatement(sql)) {
+            
+            pstm.setString(1, PlayerStatus.ONLINE.name()); 
+            
+            try (ResultSet rs = pstm.executeQuery()) {
+                while (rs.next()) {
+                    Player player = new Player(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        null,  // không cần password
+                        0,     // không cần totalWins cho lobby
+                        PlayerStatus.valueOf(rs.getString("status"))
+                    );
+                    onlinePlayers.add(player);
+                }
+            }
+            System.out.println("📋 Tìm thấy " + onlinePlayers.size() + " players ONLINE");
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return onlinePlayers;
+    }
+    // Method 5: Truy vấn Đếm số Player đang ONLINE
+    public int countPlayerOnline() {
+        String sql = "SELECT COUNT(*) AS online_count FROM Player WHERE status = ?";
+        int count = 0;
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement pstm = conn.prepareStatement(sql)) {
+
+            pstm.setString(1, PlayerStatus.ONLINE.name());
+
+            try (ResultSet rs = pstm.executeQuery()) {
+                if (rs.next()) {
+                    count = rs.getInt("online_count"); // hoặc rs.getInt(1)
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đếm người chơi ONLINE:");
+            e.printStackTrace();
+        }
+
+        return count;
+    }
 }

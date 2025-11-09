@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
 
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
@@ -14,6 +15,8 @@ public class ClientHandler implements Runnable {
     private final Socket socket;
     private ObjectOutputStream oos; 
     private ObjectInputStream ois; 
+    private Server server = Server.getInstance(); 
+    private PlayerDAO playerDAO = server.getPlayerDAO(); 
 
     private ClientHandler() {
         this.player = null;
@@ -66,7 +69,7 @@ public class ClientHandler implements Runnable {
         String type = message.getType(); 
         
         switch (type) {
-            case "LOGIN" -> {
+            case "C_LOGIN" -> {
                 // Lúc này là user đang đăng nhập,
                 // Client gửi 1 mảng String[] {username, password}
                 try {
@@ -74,13 +77,7 @@ public class ClientHandler implements Runnable {
                     String username = credentials[0];
                     String password = credentials[1];
                     
-                    // Gọi hàm của Server để xử lý
-                    boolean loginSuccess = Server.getInstance().handleLogin(username, password, this); 
-                    if (loginSuccess) {
-                        sendMessage(new Message("LOGIN_SUCCESS", this.player)); 
-                    } else {
-                        sendMessage(new Message("FAIL_SUCCESS", this.player)); 
-                    }
+                    server.handleLogin(username, password, this);
                 } catch (Exception e) {
                     sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập (dữ liệu từ user gửi)")); 
                 }
@@ -92,6 +89,15 @@ public class ClientHandler implements Runnable {
             case "SUBMIT_ANSWER" -> {
                 // làm sau
                 break; 
+            }
+            case "C_SQL_PLAYER" -> {
+                List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby();
+                Message message1 = new Message("S_ONLINE_LIST", onlinePlayers); 
+                sendMessage(message1);
+            }
+            case "C_ONLINE_COUNT" -> {
+                int count = playerDAO.countPlayerOnline(); 
+                Message message2 = new Message("S_ONLINE_COUNT", count); 
             }
         }
     }

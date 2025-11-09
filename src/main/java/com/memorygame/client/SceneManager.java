@@ -1,15 +1,23 @@
 package com.memorygame.client;
 
-import com.memorygame.client.controller.*; // Import TẤT CẢ các controller của bạn
+import java.io.IOException; // Import TẤT CẢ các controller của bạn
+import java.util.List;
+
+import com.memorygame.client.controller.ChallengeConfigController;
+import com.memorygame.client.controller.ChallengeGameController;
+import com.memorygame.client.controller.LeaderboardController;
+import com.memorygame.client.controller.LobbyController;
+import com.memorygame.client.controller.LoginController;
+import com.memorygame.client.controller.MainMenuController;
+import com.memorygame.client.controller.PracticeGameController;
+import com.memorygame.client.controller.PracticeSettingsController;
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.List;
 
 public class SceneManager implements NetworkClient.MessageListener {
 
@@ -128,14 +136,14 @@ public class SceneManager implements NetworkClient.MessageListener {
         }
         
         else if (currentController instanceof MainMenuController c) {
-            if (type.equals("S_ONLINE_LIST")) {
-                c.updateOnlineList((List<Player>) payload);
+            if (type.equals("S_ONLINE_COUNT")) {
+                c.updateOnlineCount((int) payload); // phải sửa lại 
             }
         }
         
         else if (currentController instanceof LobbyController c) {
             if (type.equals("S_ONLINE_LIST")) {
-                //c.updateOnlineList((List<Player>) payload);
+                c.updateOnlineList((List<Player>) payload);
             }
 
         }

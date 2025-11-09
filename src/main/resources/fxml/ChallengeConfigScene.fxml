@@ -38,7 +38,7 @@
                 <Separator style="-fx-background-color: #f3f4f6; -fx-pref-height: 1;" />
 
                 <VBox alignment="CENTER_LEFT" maxWidth="400" spacing="10">
-                    <Label style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #374151;" text="⏱ Thời Gian Quyết Định (giây)" />
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #374151;" text="⏱ Thời Gian Nhập" />
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <Slider fx:id="sldWaitTime" blockIncrement="1" majorTickUnit="1" max="30" min="5" minorTickCount="0" showTickLabels="false" showTickMarks="false" style="-fx-pref-width: 330;" value="10" />
                         <Label fx:id="lblWaitTimeValue" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #ef4444; -fx-min-width: 30;" text="10s" />

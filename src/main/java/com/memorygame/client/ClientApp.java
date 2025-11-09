@@ -1,12 +1,7 @@
 package com.memorygame.client;
 
-import com.memorygame.client.controller.LoginController;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class ClientApp extends Application {
 
@@ -20,7 +15,7 @@ public class ClientApp extends Application {
             this.networkClient = NetworkClient.getInstance();
             this.sceneManager = new SceneManager(primaryStage, networkClient);
  
-            sceneManager.showMainMenuScene();
+            sceneManager.showLoginScene();
 
             primaryStage.setOnCloseRequest(event -> {
                 networkClient.disconnect();

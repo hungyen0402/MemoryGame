@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import com.memorygame.common.GameSession;
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
@@ -50,6 +48,7 @@ public class Server {
 
                     // bắt đầu clientHandler trên 1 thread mới
                     new Thread(clientHandler).start(); 
+                    System.out.println("client da ket noi: " + clientSocket.getInetAddress());
                 } catch (IOException e) {
                     System.err.println("Lỗi khi chấp nhận kết nối client: " + e.getMessage()); 
                 }
@@ -62,10 +61,9 @@ public class Server {
 
     public synchronized boolean handleLogin(String userName, String password, ClientHandler client) {
         Player player = playerDAO.getPlayerByUsername(userName); 
-        client.sendMessage(new Message("LOGIN", "USER ĐĂNG NHẬP"));
         if (player != null) {
             // Kiểm tra mật khẩu
-            if (BCrypt.checkpw(password, player.getPasswordHash())) {
+            if (password.equals(player.getPasswordHash())) {
                 System.out.println("Đăng nhập thành công cho user: " + userName);
                 
                 // Cập nhật status Player trong db 
@@ -110,5 +108,8 @@ public class Server {
             handler.sendMessage(message);
         }
     }
-    
+    // Get playerDAO
+    public PlayerDAO getPlayerDAO() {
+        return this.playerDAO; 
+    }
 }

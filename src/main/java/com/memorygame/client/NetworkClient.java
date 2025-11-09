@@ -1,18 +1,23 @@
 // src/main/java/com/memorygame/client/network/NetworkClient.java
 package com.memorygame.client;
 
-import com.memorygame.common.Message;
-import javafx.application.Platform;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.SocketException;
 
-import java.io.*;
-import java.net.*;
+import com.memorygame.common.Message;
+
+import javafx.application.Platform;
 
 public class NetworkClient {
     private static final String HOST = "localhost";
-    private static final int PORT = 9999;
+    private static final int PORT = 6789;
+    private NetworkClient() {}
     // Thêm ngay dưới class
     private static NetworkClient instance;
-
     public static NetworkClient getInstance() {
         if (instance == null) {
             instance = new NetworkClient();

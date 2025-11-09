@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus;
 
@@ -36,8 +37,8 @@ public class LobbyController {
     @FXML
     private TableColumn <Player, String> colName;
 
-    @FXML
-    private TableColumn <Player, PlayerStatus> colStatus;
+    // @FXML
+    // private TableColumn <Player, PlayerStatus> colStatus;
 
     @FXML
     private TableColumn <Player, Integer> colWins;
@@ -58,7 +59,7 @@ public class LobbyController {
     @FXML
     public void initialize() {
         colName.setCellValueFactory(new PropertyValueFactory<>("username")); // Tất cả phải khớp với tên biến
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status")); // trong class Player
+        // colStatus.setCellValueFactory(new PropertyValueFactory<>("status")); // trong class Player
         colWins.setCellValueFactory(new PropertyValueFactory<>("totalWins"));
         setupActionColumn();
 
@@ -77,15 +78,6 @@ public class LobbyController {
         this.networkClient = networkClient;
     }
 
-    // // Gọi khi client nhận được S_ONLINE_LIST từ server
-    // public void updateOnlineList(List<Player> players) {
-    //     Platform.runLater(() -> {
-    //         playerList.clear();
-    //         if (players != null) {
-    //             playerList.addAll(players);
-    //         }
-    //     });
-    // }
 
     @FXML
     private void showOnlinePlayers() {
@@ -107,12 +99,27 @@ public class LobbyController {
         applyFilter();
     }
 
+    @FXML
+    private void reloadListPlayer() {
+        networkClient.sendMessage(new Message("C_SQL_PLAYER", null));
+    }
+
+    // Gọi khi client nhận được S_ONLINE_LIST từ server
+    public void updateOnlineList(List<Player> players) {
+        Platform.runLater(() -> {
+            playerList.clear();
+            if (players != null) {
+                playerList.addAll(players);
+            }
+        });
+    }
+
     private void applyFilter() {
         String keyword = txtSearch.getText();
         final String lowerCaseKeyword = (keyword == null) ? "" : keyword.toLowerCase();
-
+        
         filteredPlayerList.setPredicate(player -> {
-            boolean statusMatch = (player.getStatus() == this.currentStatusFilter);
+            // boolean statusMatch = (player.getStatus() == this.currentStatusFilter);
 
             boolean keywordMatch;
             if (lowerCaseKeyword.isEmpty()) {
@@ -121,7 +128,7 @@ public class LobbyController {
                 keywordMatch = player.getUsername().toLowerCase().contains(lowerCaseKeyword);
             }
 
-            return statusMatch && keywordMatch;
+            return keywordMatch;
         });
     }
 
