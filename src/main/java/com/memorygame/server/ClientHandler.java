@@ -81,7 +81,14 @@ public class ClientHandler implements Runnable {
                 } catch (Exception e) {
                     sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập (dữ liệu từ user gửi)")); 
                 }
-            } 
+            }
+            case "C_LOGOUT" -> {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             case "INVITE" -> {
                 // lÀM SAU 
                 break; 
@@ -97,7 +104,15 @@ public class ClientHandler implements Runnable {
             }
             case "C_ONLINE_COUNT" -> {
                 int count = playerDAO.countPlayerOnline(); 
-                Message message2 = new Message("S_ONLINE_COUNT", count); 
+                Message message2 = new Message("S_ONLINE_COUNT", count);
+                sendMessage(message2);
+            }
+            case "C_GET_MY_STATS" -> {
+                // Client muốn lấy thông tin của chính mình
+                // Biến 'this.player' đã được gán lúc login
+                if (this.player != null) {
+                    sendMessage(new Message("S_PLAYER_STATS", this.player));
+                }
             }
         }
     }

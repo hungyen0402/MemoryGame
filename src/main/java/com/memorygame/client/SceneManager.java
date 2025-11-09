@@ -136,8 +136,14 @@ public class SceneManager implements NetworkClient.MessageListener {
         }
         
         else if (currentController instanceof MainMenuController c) {
-            if (type.equals("S_ONLINE_COUNT")) {
-                c.updateOnlineCount((int) payload); // phải sửa lại 
+            switch (type){
+                case "S_ONLINE_COUNT" -> {
+                    c.updateOnlineCount((Integer)payload);
+                }
+                case "S_PLAYER_STATS" -> {
+                    // Server sẽ gửi về chính đối tượng Player của client này
+                    c.updatePlayerStats((Player) payload);
+                }
             }
         }
         

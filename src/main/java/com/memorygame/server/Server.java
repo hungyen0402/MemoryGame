@@ -91,6 +91,20 @@ public class Server {
         return false;  
     }
 
+    public synchronized void handleLogout(ClientHandler client) {
+        Player player = handlerToPlayer.get(client);
+
+        if (player != null) {
+            System.out.println("Đang xử lý logout cho: " + player.getUsername());
+
+            playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.OFFLINE);
+
+            onlinePlayers.remove(player.getUsername());
+            handlerToPlayer.remove(client);
+            broadcastOnlineList();
+        }
+    }
+
     public void handleInvite(Player inviter, String inviteUsername) {
 
     }
