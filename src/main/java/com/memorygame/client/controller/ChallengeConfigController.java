@@ -1,5 +1,8 @@
 package com.memorygame.client.controller;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -24,6 +27,9 @@ public class ChallengeConfigController {
     @FXML
     private Label lblWaitTimeValue;
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     @FXML
     public void initialize() {
         
@@ -37,8 +43,9 @@ public class ChallengeConfigController {
         bindLabelToSlider(lblWaitTimeValue, sldWaitTime, "s");
     }
 
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
     }
 
     /*Tự động cập nhật Label khi Slider thay đổi */
@@ -63,6 +70,6 @@ public class ChallengeConfigController {
 
     @FXML
     private void backToMenu() {
-        // sceneManager.showMainMenuScene();
+        sceneManager.showMainMenuScene();
     }
 }

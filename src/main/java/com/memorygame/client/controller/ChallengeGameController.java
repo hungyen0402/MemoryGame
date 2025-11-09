@@ -1,5 +1,7 @@
 package com.memorygame.client.controller;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
 import com.memorygame.common.GameSession;
 
 import javafx.application.Platform;
@@ -39,6 +41,9 @@ public class ChallengeGameController {
     @FXML
     private Label lblMemorizeTime;
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     private enum GameState {
         MEMORIZING, // Đang ghi nhớ
         ANSWERING,  // Đang trả lời
@@ -60,8 +65,9 @@ public class ChallengeGameController {
         setUIState(GameState.WAITING);
     }
 
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
     }
 
     public void setupGameInfo(GameSession session) {
@@ -81,7 +87,7 @@ public class ChallengeGameController {
 
     @FXML
     private void backToMenu() {
-
+        sceneManager.showMainMenuScene();
     }
 
     /*Server báo hiệu round mới */

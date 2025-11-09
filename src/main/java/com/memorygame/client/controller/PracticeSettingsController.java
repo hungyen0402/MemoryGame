@@ -1,5 +1,7 @@
 package com.memorygame.client.controller;
 
+import com.memorygame.client.SceneManager;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -24,6 +26,8 @@ public class PracticeSettingsController {
     @FXML
     private Label lblWaitTimeValue;
 
+    private SceneManager sceneManager;
+
     @FXML
     public void initialize() {
         
@@ -37,8 +41,8 @@ public class PracticeSettingsController {
         bindLabelToSlider(lblWaitTimeValue, sldWaitTime, "s");
     }
     
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
     }
 
     /*Tự động cập nhật Label khi Slider thay đổi */
@@ -63,6 +67,6 @@ public class PracticeSettingsController {
 
     @FXML
     private void backToMenu() {
-        // sceneManager.showMainMenuScene();
+        sceneManager.showMainMenuScene();
     }
 }

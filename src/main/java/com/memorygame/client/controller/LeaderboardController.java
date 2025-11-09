@@ -2,6 +2,8 @@ package com.memorygame.client.controller;
 
 import java.util.List;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
 import com.memorygame.common.Player;
 
 import javafx.application.Platform;
@@ -31,6 +33,9 @@ public class LeaderboardController {
     @FXML
     private TableColumn<Player, Integer> colWins;
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     private ObservableList<Player> playerList = FXCollections.observableArrayList();
 
     @FXML
@@ -43,6 +48,11 @@ public class LeaderboardController {
         tblRank.setItems(playerList);
 
         loadLeaderboardData();
+    }
+
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
     }
 
     /**NetworkClient sẽ gọi nó để cập nhật BXH khi nhận được dữ liệu BXH */
@@ -62,7 +72,7 @@ public class LeaderboardController {
 
     @FXML
     private void backToMenu() {
-
+        sceneManager.showMainMenuScene();
     }
 
     /**Gửi yêu cầu đến server để lấy BXH */

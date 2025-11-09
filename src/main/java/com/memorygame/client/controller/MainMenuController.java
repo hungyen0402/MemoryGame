@@ -2,6 +2,8 @@ package com.memorygame.client.controller;
 
 import java.util.List;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
 import com.memorygame.common.Player;
 
 import javafx.application.Platform;
@@ -15,6 +17,9 @@ public class MainMenuController {
     @FXML
     private Label lblOnlineCount; // Cần thêm fx:id="lblOnlineCount" trong MainMenuScene.fxml
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     @FXML
     public void initialize() {
         lblOnlineCount.setText("0");
@@ -24,29 +29,30 @@ public class MainMenuController {
     /**Cần truyền NetworkClient + tham chiếu đến đối tượng quản lý chung (SceneManager) vào đây
      * Gọi bởi SceneManager sau khi tải FXML. Tương tự với các controller khác
     */
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
     }
 
     @FXML
     private void openPractice() {
-        // sceneManager.showPracticeSettingsScene();
+        sceneManager.showPracticeSettingsScene();
     }
 
     @FXML
     private void openChallenge() {
-        // sceneManager.showLobbyScene();
+        sceneManager.showLobbyScene();
     }
 
     @FXML
     private void openLeaderboard() {
-        // sceneManager.showLeaderboardScene();
+        sceneManager.showLeaderboardScene();
     }
 
     @FXML
     private void logout() {
         // networkClient.logout();
-        // sceneManager.showLoginScene();
+        sceneManager.showLoginScene();
     }
 
     public void updateOnlineList(List<Player> players) {

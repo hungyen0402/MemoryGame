@@ -2,6 +2,8 @@ package com.memorygame.client.controller;
 
 import java.util.List;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus;
 
@@ -43,6 +45,9 @@ public class LobbyController {
     @FXML
     private TableColumn <Player, Void> colAction;
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     /** tblPlayers sẽ theo dõi danh sách này, khi thêm/xóa Player khỏi đây thì TableView sẽ tự động cập nhật */
     private ObservableList<Player> playerList = FXCollections.observableArrayList();
 
@@ -67,19 +72,20 @@ public class LobbyController {
         applyFilter();
     }
 
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
     }
 
-    // Gọi khi client nhận được S_ONLINE_LIST từ server
-    public void updateOnlineList(List<Player> players) {
-        Platform.runLater(() -> {
-            playerList.clear();
-            if (players != null) {
-                playerList.addAll(players);
-            }
-        });
-    }
+    // // Gọi khi client nhận được S_ONLINE_LIST từ server
+    // public void updateOnlineList(List<Player> players) {
+    //     Platform.runLater(() -> {
+    //         playerList.clear();
+    //         if (players != null) {
+    //             playerList.addAll(players);
+    //         }
+    //     });
+    // }
 
     @FXML
     private void showOnlinePlayers() {
@@ -93,7 +99,7 @@ public class LobbyController {
 
     @FXML
     private void backToMenu() {
-        
+        sceneManager.showMainMenuScene();
     }
 
     @FXML

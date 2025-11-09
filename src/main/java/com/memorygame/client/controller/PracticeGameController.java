@@ -1,5 +1,8 @@
 package com.memorygame.client.controller;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -43,8 +46,12 @@ public class PracticeGameController {
         lblHint.setText("");
         setUIState(GameState.ENDED); // Bắt đầu ở trạng thái kết thúc
     }
+
+    public void setupController(SceneManager sceneManager) {
+
+    }
     
-    public void setupGame() {
+    public void setupGame(int thinkTime, int totalRounds, int waitTime) {
 
     }
 
