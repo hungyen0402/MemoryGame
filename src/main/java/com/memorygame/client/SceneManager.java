@@ -11,6 +11,7 @@ import com.memorygame.client.controller.LoginController;
 import com.memorygame.client.controller.MainMenuController;
 import com.memorygame.client.controller.PracticeGameController;
 import com.memorygame.client.controller.PracticeSettingsController;
+import com.memorygame.client.controller.RegisterController; 
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
@@ -61,6 +62,8 @@ public class SceneManager implements NetworkClient.MessageListener {
                 c.setupController(this, networkClient);
             } else if (currentController instanceof ChallengeGameController c) {
                 c.setupController(this, networkClient);
+            } else if (currentController instanceof RegisterController c) {
+                c.setupController(this, networkClient); 
             }
 
             // Hiển thị scene mới
@@ -116,6 +119,9 @@ public class SceneManager implements NetworkClient.MessageListener {
         loadAndShowScene("/fxml/ChallengeGameScene.fxml");
     }
     
+    public void showRegisterScene() {
+        loadAndShowScene("/fxml/RegisterScene.fxml"); 
+    }
     @Override
     public void onMessageReceived(Message msg) {
         String type = msg.getType();
@@ -162,6 +168,11 @@ public class SceneManager implements NetworkClient.MessageListener {
             }
         }
         
+        else if (currentController instanceof RegisterController c) {
+            switch (type) {
+                
+            }
+        }
         // (Các màn hình Practice không cần nhận tin nhắn)
     }
 }

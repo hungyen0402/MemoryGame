@@ -32,7 +32,7 @@ public class LoginController {
     
     @FXML
     private void handleRegister() {
-        showAlert("Đăng ký tài khoản mới\n\nTính năng sẽ có trong bản 2.0!\nEmail: support@mindflow.vn");
+        sceneManager.showRegisterScene();
     }
 
     @FXML
