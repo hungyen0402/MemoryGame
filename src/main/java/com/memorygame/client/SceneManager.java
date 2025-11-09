@@ -55,10 +55,8 @@ public class SceneManager implements NetworkClient.MessageListener {
             } else if (currentController instanceof LeaderboardController c) {
                 c.setupController(this, networkClient);
             } else if (currentController instanceof PracticeSettingsController c) {
-                c.setupController(this); 
+                c.setupController(this, networkClient); 
             } else if (currentController instanceof PracticeGameController c) {
-                c.setupController(this);
-            } else if (currentController instanceof ChallengeConfigController c) {
                 c.setupController(this, networkClient);
             } else if (currentController instanceof ChallengeGameController c) {
                 c.setupController(this, networkClient);
@@ -104,15 +102,15 @@ public class SceneManager implements NetworkClient.MessageListener {
     }
 
     public void showChallengeConfigScene(Player opponent) {
-        loadAndShowScene("/fxml/ChallengeConfigScene.fxml");
+        ChallengeConfigController controller = (ChallengeConfigController) loadAndShowScene("/fxml/ChallengeConfigScene.fxml");
+        
+        if (controller != null) {
+            controller.setupController(this, networkClient, opponent);
+        }
     }
 
     public void showPracticeGameScene(int thinkTime, int totalRounds, int waitTime) {
-        PracticeGameController controller = (PracticeGameController) loadAndShowScene("/fxml/PracticeGameScene.fxml");
-        if (controller != null) {
-            // (Truyền cài đặt vào controller game)
-            controller.setupGame(thinkTime, totalRounds, waitTime);
-        }
+        loadAndShowScene("/fxml/PracticeGameScene.fxml");
     }
     
     public void showChallengeGameScene() {
@@ -133,6 +131,7 @@ public class SceneManager implements NetworkClient.MessageListener {
                     Object[] response = (Object[]) payload;
                     Boolean success = (Boolean) response[0];
                     Player player = (Player) response[1];
+                    ClientState.getInstance().setCurrentPlayer(player);
 
                     if (Boolean.TRUE.equals(success)) {
                         c.onLoginSuccess();

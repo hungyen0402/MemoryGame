@@ -84,6 +84,7 @@ public class ClientHandler implements Runnable {
                     String password = credentials[1];
                     
                     boolean login_success = server.handleLogin(username, password, this);
+
                     Object[] loginResponse = {login_success, this.player};
                     Message message1 = new Message("S_LOGIN_RESPONSE", loginResponse);
                     sendMessage(message1); 
@@ -115,6 +116,11 @@ public class ClientHandler implements Runnable {
                 int count = playerDAO.countPlayerOnline(); 
                 Message message3 = new Message("S_ONLINE_COUNT", count); 
                 sendMessage(message3); 
+            }
+            case "C_GET_LEADERBOARD" -> {
+                List<Player> leaderboard = playerDAO.getLeaderBoard();
+                Message message4 = new Message("S_LEADERBOARD_DATA", leaderboard);
+                sendMessage(message4);
             }
             case "C_REGISTER" -> {
                 try {

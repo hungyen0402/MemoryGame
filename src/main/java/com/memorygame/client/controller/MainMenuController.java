@@ -1,5 +1,6 @@
 package com.memorygame.client.controller;
 
+import com.memorygame.client.ClientState;
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
 import com.memorygame.common.Message;
@@ -34,6 +35,9 @@ public class MainMenuController {
         this.networkClient = networkClient;
         Message message = new Message("C_ONLINE_COUNT", null); 
         networkClient.sendMessage(message);
+
+        Player currentPlayer = ClientState.getInstance().getCurrentPlayer();
+        updatePlayerStats(currentPlayer);
     }
 
     @FXML

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
 import javafx.application.Platform;
@@ -59,7 +60,7 @@ public class LeaderboardController {
     public void onLeaderboardDataReceived(List<Player> players) {
         Platform.runLater(() -> {
             playerList.clear();
-            if (playerList != null) {
+            if (players != null) {
                 playerList.addAll(players); // Không cần sắp xếp do câu lệnh sql đã sắp xếp sẵn rồi
             }
         });
@@ -77,7 +78,11 @@ public class LeaderboardController {
 
     /**Gửi yêu cầu đến server để lấy BXH */
     private void loadLeaderboardData() {
-
+        if (networkClient != null) {
+            networkClient.sendMessage(new Message("C_GET_LEADERBOARD", null));
+        } else {
+            System.out.println("networkClient là null");
+        }
     }
 
     private void setupRankColumn() {
