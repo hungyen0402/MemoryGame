@@ -7,8 +7,11 @@ import com.memorygame.common.Message;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
@@ -35,6 +38,12 @@ public class PracticeGameController {
     @FXML
     private Button btnSubmit;
 
+    @FXML
+    private Label lblTotalRounds;
+
+    @FXML
+    private Label lblMemorizeTime;
+
     private SceneManager sceneManager;
     private NetworkClient networkClient;
     private Timeline gameTimer;
@@ -55,6 +64,9 @@ public class PracticeGameController {
         lblTimer.setText("0s");
         lblWord.setText("Đang tải...");
         lblHint.setText("Chào mừng đến với luyện tập!");
+        // (Kiểm tra xem bạn đã thêm 2 ID này vào FXML chưa)
+        if (lblTotalRounds != null) lblTotalRounds.setText("Tổng Vòng: 0");
+        if (lblMemorizeTime != null) lblMemorizeTime.setText("Thời gian nhớ: 0s");
         setUIState(GameState.WAITING); 
     }
 
@@ -64,38 +76,61 @@ public class PracticeGameController {
     }
 
     public void setupGameInfo(GameSession session) {
-        // Hàm này được gọi khi SceneManager nhận S_PRACTICE_START
-        lblHint.setText("Game bắt đầu!");
+        Platform.runLater(() -> {
+            if (lblTotalRounds != null) {
+                lblTotalRounds.setText("Tổng Vòng: " + totalRounds);
+            }
+            if (lblMemorizeTime != null) {
+                lblMemorizeTime.setText("Thời gian nhớ: " + memorizeTime + "s");
+            }
+            lblHint.setText("Game bắt đầu!");
+        });
     }
 
     public void onNewRound(String word, int round, int memorizeTime) {
-        lblWord.setText(word);
-        lblRound.setText(String.format("%02d", round));
-        lblHint.setText("Ghi nhớ!");
-        setUIState(GameState.MEMORIZING);
-        startTimer(memorizeTime); // Bắt đầu đếm ngược (chỉ để hiển thị)
+        Platform.runLater(() -> {
+            lblWord.setText(word);
+            lblRound.setText(String.format("%02d", round));
+            lblHint.setText("Ghi nhớ!");
+            setUIState(GameState.MEMORIZING);
+            startTimer(memorizeTime); // Bắt đầu đếm ngược (chỉ để hiển thị)
+        });
     }
 
     public void onAnswerPhase(int answerTime) {
-        lblWord.setText("???");
-        lblHint.setText("Trả lời!");
-        setUIState(GameState.ANSWERING);
-        startTimer(answerTime); // Bắt đầu đếm ngược
+        Platform.runLater(() -> {
+            lblWord.setText("???");
+            lblHint.setText("Trả lời!");
+            setUIState(GameState.ANSWERING);
+            startTimer(answerTime); // Bắt đầu đếm ngược
+        });
     }
 
     public void onScoreUpdate(int newScore) {
-        lblPoints.setText(String.valueOf(newScore));
-        lblHint.setText("Chờ vòng tiếp theo...");
-        setUIState(GameState.WAITING);
+        Platform.runLater(() -> {
+            lblPoints.setText(String.valueOf(newScore));
+            lblHint.setText("Chờ vòng tiếp theo...");
+            setUIState(GameState.WAITING);
+        });
     }
 
     public void onGameOver(int finalScore) {
-        if (gameTimer != null) gameTimer.stop();
-        setUIState(GameState.ENDED);
-        lblWord.setText("Kết thúc!");
-        lblHint.setText("Hoàn thành luyện tập!");
-        // (Hiển thị Alert...)
-        sceneManager.showMainMenuScene();
+        Platform.runLater(() -> {
+            if (gameTimer != null) gameTimer.stop();
+            setUIState(GameState.ENDED);
+            lblWord.setText("Kết thúc!");
+            lblHint.setText("Hoàn thành luyện tập!");
+
+            // Hiển thị Alert thông báo
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, 
+                "Bạn đã hoàn thành bài luyện tập với số điểm: " + finalScore, 
+                ButtonType.OK);
+            alert.setTitle("Kết thúc luyện tập");
+            alert.setHeaderText(null);
+            alert.showAndWait(); // Chờ người dùng nhấn OK
+            
+            sceneManager.showMainMenuScene(); // Quay về menu
+        });
     }
 
     @FXML

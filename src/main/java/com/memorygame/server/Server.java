@@ -26,12 +26,13 @@ public class Server {
 
     private static final int PORT = 6789; 
     private PlayerDAO playerDAO; 
-
+    private VocabularyDAO vocabularyDAO;
     private Server() {
         this.onlinePlayers = new ConcurrentHashMap<>();
         this.handlerToPlayer = new ConcurrentHashMap<>();
         this.playerToSession = new ConcurrentHashMap<>();
         this.playerDAO = new PlayerDAO(); 
+        this.vocabularyDAO = new VocabularyDAO();
     }
 
     public static Server getInstance() {
@@ -159,7 +160,72 @@ public class Server {
             handler.sendMessage(message);
         }
     }
+// --- CÁC HÀM MỚI CHO LOGIC GAME ---
 
+    /**
+     * Bắt đầu game luyện tập cho 1 người chơi
+     */
+    public synchronized void handleStartPractice(Player player, Map<String, Object> settings) {
+        if (player == null) return;
+        
+        // Cập nhật trạng thái người chơi
+        player.setStatus(PlayerStatus.BUSY);
+        playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.BUSY);
+        
+        // Tạo game session mới
+        GameSession newSession = new GameSession(player, settings, this);
+        playerToSession.put(player, newSession);
+        
+        System.out.println(player.getUsername() + " bat dau luyen tap.");
+        
+        // Bắt đầu game (GameSession sẽ tự gửi message S_PRACTICE_START)
+        newSession.start();
+        
+        // Cập nhật sảnh chờ cho người khác
+        broadcastOnlineList();
+    }
+
+    /**
+     * Người chơi chủ động rời game (luyện tập hoặc thách đấu)
+     */
+    public synchronized void handleLeaveGame(Player player) {
+        if (player == null) return;
+        
+        GameSession session = playerToSession.get(player);
+        if (session != null) {
+            if (session.isPractice()) {
+                session.leaveGame(); // Sẽ tự gọi removePracticeSession
+            } else {
+                // TODO: Xử lý rời game thách đấu (báo cho người kia)
+            }
+        }
+    }
+
+    /**
+     * Dọn dẹp session luyện tập (được gọi bởi GameSession)
+     */
+    public synchronized void removePracticeSession(Player player) {
+        playerToSession.remove(player);
+        
+        // Cập nhật trạng thái người chơi
+        player.setStatus(PlayerStatus.ONLINE);
+        playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.ONLINE);
+        
+        // Cập nhật sảnh chờ
+        broadcastOnlineList();
+    }
+
+    /**
+     * Gửi tin nhắn đến một người chơi cụ thể
+     */
+    public void sendMessageToPlayer(Player player, Message message) {
+        if (player != null) {
+            ClientHandler handler = onlinePlayers.get(player.getUsername());
+            if (handler != null) {
+                handler.sendMessage(message);
+            }
+        }
+    }
     public void handleLogout(ClientHandler client) {
         Player player = handlerToPlayer.get(client);
         if (player != null) {
@@ -177,5 +243,12 @@ public class Server {
     // Get playerDAO
     public PlayerDAO getPlayerDAO() {
         return this.playerDAO; 
+    }
+    public VocabularyDAO getVocabularyDAO() {
+        return this.vocabularyDAO;
+    }
+
+    public GameSession getSessionForPlayer(Player player) {
+        return playerToSession.get(player);
     }
 }

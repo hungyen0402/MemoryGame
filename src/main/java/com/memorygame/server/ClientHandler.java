@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 
+import com.memorygame.common.GameSession;
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
@@ -74,7 +75,11 @@ public class ClientHandler implements Runnable {
     // HÀM XỬ LÝ CÁC MESSAGE NHẬN ĐƯỢC 
     public void processMessage(Message message) {
         String type = message.getType(); 
-        
+    // Chỉ xử lý nếu đã đăng nhập (ngoại trừ C_LOGIN và C_REGISTER)
+        if (this.player == null && !type.equals("C_LOGIN") && !type.equals("C_REGISTER")) {
+             System.err.println("Nhan duoc message " + type + " tu client chua dang nhap.");
+             return;
+        }
         switch (type) {
             case "C_LOGIN" -> {
                 // Lúc này là user đang đăng nhập,
@@ -114,10 +119,6 @@ public class ClientHandler implements Runnable {
                 }
                 break; 
             }
-            case "SUBMIT_ANSWER" -> {
-                // làm sau
-                break; 
-            }
             case "C_SQL_PLAYER" -> {
                 List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby(this.player.getId());
                 Message message2 = new Message("S_ONLINE_LIST", onlinePlayers); 
@@ -151,6 +152,25 @@ public class ClientHandler implements Runnable {
                 }
             }
             case "C_START_PRACTICE" -> {
+                System.out.println("Nhan duoc C_START_PRACTICE tu " + this.player.getUsername()); 
+                @SuppressWarnings("unchecked")
+                Map<String, Object> settings = (Map<String, Object>) message.getPayload();  
+                server.handleStartPractice(this.player, settings);
+                break; 
+            }
+            case "SUBMIT_ANSWER" -> {
+                String answer = (String) message.getPayload();
+                GameSession session = server.getSessionForPlayer(this.player);
+                if (session != null) {
+                    session.submitAnswer(answer);
+                } else {
+                    System.err.println("Nhan duoc SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
+                }
+                break; 
+            }
+            case "C_LEAVE_GAME" -> {
+                System.out.println("Nhan duoc C_LEAVE_GAME tu " + player.getUsername()); 
+                server.handleLeaveGame(this.player);
                 break; 
             }
         }

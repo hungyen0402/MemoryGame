@@ -2,6 +2,7 @@ package com.memorygame.client;
 
 import java.io.IOException; // Import TẤT CẢ các controller của bạn
 import java.util.List;
+import java.util.Map;
 
 import com.memorygame.client.controller.ChallengeConfigController;
 import com.memorygame.client.controller.ChallengeGameController;
@@ -25,8 +26,6 @@ public class SceneManager implements NetworkClient.MessageListener {
 
     private Stage primaryStage;
     private NetworkClient networkClient;
-
-    // Lưu lại controller đang hiển thị
     private Object currentController;
 
     public SceneManager(Stage primaryStage, NetworkClient networkClient) {
@@ -111,7 +110,10 @@ public class SceneManager implements NetworkClient.MessageListener {
     }
 
     public void showPracticeGameScene(int thinkTime, int totalRounds, int waitTime) {
-        loadAndShowScene("/fxml/PracticeGameScene.fxml");
+        PracticeGameController controller = (PracticeGameController) loadAndShowScene("/fxml/PracticeGameScene.fxml");
+        if (controller != null) {
+            controller.setupGameInfo(totalRounds, thinkTime);
+        }
     }
     
     public void showChallengeGameScene() {
@@ -187,8 +189,37 @@ public class SceneManager implements NetworkClient.MessageListener {
         }
         else if (currentController instanceof PracticeSettingsController c) {
             switch (type) {
-                case "C_START_PRACTICE" -> {
+                case "S_PRACTICE_START" -> { // Server báo game bắt đầu
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> settings = (Map<String, Object>) payload;
+                    long thinkTime = (long) settings.get("thinkTime");
+                    int totalRounds = (int) settings.get("totalRounds");
+                    long waitTime = (long) settings.get("waitTime");
                     
+                    // Chuyển sang màn hình chơi game
+                    showPracticeGameScene(thinkTime, totalRounds, waitTime);
+                }
+            }
+        }
+        // 8. XỬ LÝ CHO PRACTICE GAME (Màn hình chơi game) <-- PHẦN THIẾU
+        else if (currentController instanceof PracticeGameController c) {
+             switch (type) {
+                case "S_NEW_ROUND" -> {
+                    // Payload: Object[] {word, round, memorizeTime}
+                    Object[] data = (Object[]) payload;
+                    c.onNewRound((String) data[0], (int) data[1], (int) data[2]);
+                }
+                case "S_ANSWER_PHASE" -> {
+                    // Payload: Integer answerTime
+                    c.onAnswerPhase((int) payload);
+                }
+                case "S_SCORE_UPDATE" -> {
+                    // Payload: Integer newScore
+                    c.onScoreUpdate((int) payload);
+                }
+                case "S_GAME_OVER" -> {
+                    // Payload: Integer finalScore
+                    c.onGameOver((int) payload);
                 }
             }
         }
