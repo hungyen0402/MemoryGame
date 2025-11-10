@@ -2,7 +2,6 @@ package com.memorygame.client.controller;
 
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
-import com.memorygame.common.GameSession;
 import com.memorygame.common.Message;
 
 import javafx.animation.KeyFrame;
@@ -75,7 +74,7 @@ public class PracticeGameController {
         this.networkClient = networkClient;
     }
 
-    public void setupGameInfo(GameSession session) {
+    public void setupGameInfo(int totalRounds, long memorizeTime) {
         Platform.runLater(() -> {
             if (lblTotalRounds != null) {
                 lblTotalRounds.setText("Tổng Vòng: " + totalRounds);

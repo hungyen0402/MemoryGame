@@ -109,7 +109,7 @@ public class SceneManager implements NetworkClient.MessageListener {
         }
     }
 
-    public void showPracticeGameScene(int thinkTime, int totalRounds, int waitTime) {
+    public void showPracticeGameScene(long thinkTime, int totalRounds, long waitTime) {
         PracticeGameController controller = (PracticeGameController) loadAndShowScene("/fxml/PracticeGameScene.fxml");
         if (controller != null) {
             controller.setupGameInfo(totalRounds, thinkTime);
