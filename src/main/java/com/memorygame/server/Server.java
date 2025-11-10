@@ -82,7 +82,7 @@ public class Server {
                 // (cái này là việc của ClienHandler)
                 // client.sendMessage(new Message("LOGIN_SUCCESS", player)); 
                 // Thông báo tới các user khác
-                broadcastOnlineList(); 
+                broadcastOnlineList(player); 
 
                 return true; 
             }
@@ -149,10 +149,10 @@ public class Server {
         
     }
     // Gửi message 
-    public void broadcastOnlineList() {
+    public void broadcastOnlineList(Player currentPlayer) {
         System.out.println("Dang cap nhap va gui danh sach online ...."); 
 
-        List<Player> onlinePlayerList = new ArrayList<>(handlerToPlayer.values());
+        List<Player> onlinePlayerList = playerDAO.getOnlinePlayersForLobby(currentPlayer.getId());
         Message message = new Message("S_ONLINE_LIST", onlinePlayerList); 
         for (ClientHandler handler : handlerToPlayer.keySet()) {
             handler.sendMessage(message);
@@ -166,7 +166,7 @@ public class Server {
             playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.OFFLINE);;
             onlinePlayers.remove(player.getUsername());
             handlerToPlayer.remove(client);
-            broadcastOnlineList();
+            broadcastOnlineList(player);
         }
         else{
             System.out.println("Client chua dang nhap da ngat ket noi, chi dong socket.");

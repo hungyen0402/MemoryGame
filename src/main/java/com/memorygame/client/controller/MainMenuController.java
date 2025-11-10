@@ -62,16 +62,13 @@ public class MainMenuController {
     }
 
     public void updateOnlineCount(Integer count_players) {
-        Platform.runLater(() -> {
             lblOnlineCount.setText(String.valueOf(count_players));
-        });
+
     }
 
     public void updatePlayerStats(Player player) {
         if (player != null) {
-            Platform.runLater(() -> {
                 lblTotalWins.setText(String.valueOf(player.getTotalWins()));
-            });
         }
     }
 }

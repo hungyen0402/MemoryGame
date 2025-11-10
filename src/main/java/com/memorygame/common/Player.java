@@ -2,7 +2,7 @@ package com.memorygame.common;
 
 import java.io.Serializable;
 
-public class Player implements Serializable{
+public class Player implements Serializable {
     private int id; 
     private String username; 
     private String passwordHash; 
