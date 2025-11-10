@@ -182,6 +182,16 @@ public class ClientHandler implements Runnable {
                 String inviterUsername = (String) message.getPayload();
                 server.handleDeclineInvite(this.player, inviterUsername);
             }
+            case "C_SUBMIT_ANSWER" -> {
+                String answer = (String) message.getPayload();
+                GameSession session = server.getSessionForPlayer(this.player);
+                if (session != null) {
+                    session.submitAnswer(answer);
+                } else {
+                    System.err.println("Nhan duoc SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
+                }
+                break; 
+            }
         }
     }
 }
