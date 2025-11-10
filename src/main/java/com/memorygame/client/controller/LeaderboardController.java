@@ -2,6 +2,9 @@ package com.memorygame.client.controller;
 
 import java.util.List;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
 import javafx.application.Platform;
@@ -31,6 +34,9 @@ public class LeaderboardController {
     @FXML
     private TableColumn<Player, Integer> colWins;
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     private ObservableList<Player> playerList = FXCollections.observableArrayList();
 
     @FXML
@@ -45,11 +51,17 @@ public class LeaderboardController {
         loadLeaderboardData();
     }
 
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
+        initialize(); 
+    }
+
     /**NetworkClient sẽ gọi nó để cập nhật BXH khi nhận được dữ liệu BXH */
     public void onLeaderboardDataReceived(List<Player> players) {
         Platform.runLater(() -> {
             playerList.clear();
-            if (playerList != null) {
+            if (players != null) {
                 playerList.addAll(players); // Không cần sắp xếp do câu lệnh sql đã sắp xếp sẵn rồi
             }
         });
@@ -62,12 +74,17 @@ public class LeaderboardController {
 
     @FXML
     private void backToMenu() {
-
+        sceneManager.showMainMenuScene();
     }
 
     /**Gửi yêu cầu đến server để lấy BXH */
     private void loadLeaderboardData() {
-
+        if (networkClient != null) {
+            networkClient.sendMessage(new Message("C_GET_LEADERBOARD", null));
+            System.out.println("Leaderboard controller GUI MESSAGE TOI CLIENTHANDLER"); 
+        } else {
+            System.out.println("networkClient là null");
+        }
     }
 
     private void setupRankColumn() {

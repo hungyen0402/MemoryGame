@@ -1,5 +1,12 @@
 package com.memorygame.client.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -24,6 +31,9 @@ public class PracticeSettingsController {
     @FXML
     private Label lblWaitTimeValue;
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     @FXML
     public void initialize() {
         
@@ -37,8 +47,9 @@ public class PracticeSettingsController {
         bindLabelToSlider(lblWaitTimeValue, sldWaitTime, "s");
     }
     
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
     }
 
     /*Tự động cập nhật Label khi Slider thay đổi */
@@ -58,11 +69,20 @@ public class PracticeSettingsController {
 
     @FXML
     private void startPractice() {
+        long thinkTime = (long) sldThinkTime.getValue();
+        int totalRounds = (int) sldRounds.getValue();   
+        long waitTime = (long) sldWaitTime.getValue();
 
+        Map<String, Object> settings = new HashMap<>();
+        settings.put("thinkTime", thinkTime);
+        settings.put("totalRounds", totalRounds);
+        settings.put("waitTime", waitTime);
+
+        networkClient.sendMessage(new Message("C_START_PRACTICE", settings));
     }
 
     @FXML
     private void backToMenu() {
-        // sceneManager.showMainMenuScene();
+        sceneManager.showMainMenuScene();
     }
 }

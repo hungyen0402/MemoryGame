@@ -44,7 +44,7 @@
                 <Label text="Thống Kê Cá Nhân" 
                        style="-fx-font-weight: 700; -fx-font-size: 18px; -fx-text-fill: #1f2937;" />
                 <Label text="Tổng trận thắng:" style="-fx-text-fill: #4b5563; -fx-font-size: 15px;"/>
-                <Label fx:id="lblWins" text="58" 
+                <Label fx:id="lblTotalWins" text="58" 
                        style="-fx-font-weight: 800; -fx-font-size: 22px; -fx-text-fill: #10b981;"/>
             </VBox>
 
@@ -52,7 +52,7 @@
                 <Label text="Trạng Thái Hệ Thống" 
                        style="-fx-font-weight: 700; -fx-font-size: 18px; -fx-text-fill: #1f2937;" />
                 <Label text="Người chơi trực tuyến:" style="-fx-text-fill: #4b5563; -fx-font-size: 15px;"/>
-                <Label fx:id="lblOnlinePlayers" text="12" 
+                <Label fx:id="lblOnlineCount" text="12" 
                        style="-fx-font-weight: 800; -fx-font-size: 22px; -fx-text-fill: #f59e0b;"/>
             </VBox>
         </HBox>

@@ -2,6 +2,9 @@ package com.memorygame.client.controller;
 
 import java.util.List;
 
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 import com.memorygame.common.PlayerStatus;
 
@@ -17,7 +20,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 public class LobbyController {
     @FXML
     private TextField txtSearch;
@@ -34,14 +39,17 @@ public class LobbyController {
     @FXML
     private TableColumn <Player, String> colName;
 
-    @FXML
-    private TableColumn <Player, PlayerStatus> colStatus;
+    // @FXML
+    // private TableColumn <Player, PlayerStatus> colStatus;
 
     @FXML
     private TableColumn <Player, Integer> colWins;
     
     @FXML
     private TableColumn <Player, Void> colAction;
+
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
 
     /** tblPlayers sẽ theo dõi danh sách này, khi thêm/xóa Player khỏi đây thì TableView sẽ tự động cập nhật */
     private ObservableList<Player> playerList = FXCollections.observableArrayList();
@@ -53,7 +61,7 @@ public class LobbyController {
     @FXML
     public void initialize() {
         colName.setCellValueFactory(new PropertyValueFactory<>("username")); // Tất cả phải khớp với tên biến
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status")); // trong class Player
+        // colStatus.setCellValueFactory(new PropertyValueFactory<>("status")); // trong class Player
         colWins.setCellValueFactory(new PropertyValueFactory<>("totalWins"));
         setupActionColumn();
 
@@ -67,19 +75,12 @@ public class LobbyController {
         applyFilter();
     }
 
-    public void setupController() {
-
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
+        networkClient.sendMessage(new Message("C_SQL_PLAYER", null));
     }
 
-    // Gọi khi client nhận được S_ONLINE_LIST từ server
-    public void updateOnlineList(List<Player> players) {
-        Platform.runLater(() -> {
-            playerList.clear();
-            if (players != null) {
-                playerList.addAll(players);
-            }
-        });
-    }
 
     @FXML
     private void showOnlinePlayers() {
@@ -93,7 +94,7 @@ public class LobbyController {
 
     @FXML
     private void backToMenu() {
-        
+        sceneManager.showMainMenuScene();
     }
 
     @FXML
@@ -101,12 +102,27 @@ public class LobbyController {
         applyFilter();
     }
 
+    @FXML
+    private void reloadListPlayer() {
+        networkClient.sendMessage(new Message("C_SQL_PLAYER", null));
+    }
+
+    // Gọi khi client nhận được S_ONLINE_LIST từ server
+    public void updateOnlineList(List<Player> players) {
+        Platform.runLater(() -> {
+            playerList.clear();
+            if (players != null) {
+                playerList.addAll(players);
+            }
+        });
+    }
+
     private void applyFilter() {
         String keyword = txtSearch.getText();
         final String lowerCaseKeyword = (keyword == null) ? "" : keyword.toLowerCase();
-
+        
         filteredPlayerList.setPredicate(player -> {
-            boolean statusMatch = (player.getStatus() == this.currentStatusFilter);
+            // boolean statusMatch = (player.getStatus() == this.currentStatusFilter);
 
             boolean keywordMatch;
             if (lowerCaseKeyword.isEmpty()) {
@@ -115,7 +131,7 @@ public class LobbyController {
                 keywordMatch = player.getUsername().toLowerCase().contains(lowerCaseKeyword);
             }
 
-            return statusMatch && keywordMatch;
+            return keywordMatch;
         });
     }
 
@@ -159,7 +175,17 @@ public class LobbyController {
         colAction.setCellFactory(cellFactory);
     }
 
-    private void handleChallengePlayer(Player player) {
-
+    private void handleChallengePlayer(Player opponent) {
+        sceneManager.showChallengeConfigScene(opponent);
+    }
+    // Hàm mới được thêm vào: 12h 10/11
+    /*Hiển thị alert (được gọi từ SceneManager) */
+    public void showInviteStatusAlert(String title, String content, AlertType type) {
+        Platform.runLater(() -> {
+            Alert a = new Alert(type, content, ButtonType.OK); 
+            a.setTitle(title); 
+            a.setHeaderText(null); 
+            a.showAndWait();            
+        });
     }
 }

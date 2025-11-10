@@ -1,7 +1,9 @@
 package com.memorygame.client.controller;
 
-import java.util.List;
-
+import com.memorygame.client.ClientState;
+import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
+import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
 import javafx.application.Platform;
@@ -15,45 +17,53 @@ public class MainMenuController {
     @FXML
     private Label lblOnlineCount; // Cần thêm fx:id="lblOnlineCount" trong MainMenuScene.fxml
 
+    private SceneManager sceneManager;
+    private NetworkClient networkClient;
+
     @FXML
     public void initialize() {
         lblOnlineCount.setText("0");
         lblTotalWins.setText("0");
+
     }
 
     /**Cần truyền NetworkClient + tham chiếu đến đối tượng quản lý chung (SceneManager) vào đây
      * Gọi bởi SceneManager sau khi tải FXML. Tương tự với các controller khác
     */
-    public void setupController() {
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
+        Message message = new Message("C_ONLINE_COUNT", null); 
+        networkClient.sendMessage(message);
 
+        Player currentPlayer = ClientState.getInstance().getCurrentPlayer();
+        updatePlayerStats(currentPlayer);
     }
 
     @FXML
     private void openPractice() {
-        // sceneManager.showPracticeSettingsScene();
+        sceneManager.showPracticeSettingsScene();
     }
 
     @FXML
     private void openChallenge() {
-        // sceneManager.showLobbyScene();
+        sceneManager.showLobbyScene();
     }
 
     @FXML
     private void openLeaderboard() {
-        // sceneManager.showLeaderboardScene();
+        sceneManager.showLeaderboardScene();
     }
 
     @FXML
     private void logout() {
-        // networkClient.logout();
-        // sceneManager.showLoginScene();
+        networkClient.logout();
+        sceneManager.showLoginScene();
     }
 
-    public void updateOnlineList(List<Player> players) {
-        int count = (players != null) ? players.size() : 0;
-        
+    public void updateOnlineCount(Integer count_players) {
         Platform.runLater(() -> {
-            lblOnlineCount.setText(String.valueOf(count));
+            lblOnlineCount.setText(String.valueOf(count_players));
         });
     }
 

@@ -9,10 +9,14 @@
       fx:controller="com.memorygame.client.controller.LobbyController"
       alignment="TOP_CENTER"
       spacing="35"
-      style="-fx-background-color: #f0f2f5; -fx-padding: 50 40 40 40; -fx-font-family: 'Roboto', 'Segoe UI';">
+      style="-fx-background-color: #f0f2f5; 
+             -fx-padding: 50 40 40 40; 
+             -fx-font-family: 'Roboto', 'Segoe UI';">
 
     <VBox spacing="30" maxWidth="850" alignment="TOP_CENTER"
-          style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40;
+          style="-fx-background-color: white; 
+                 -fx-background-radius: 20; 
+                 -fx-padding: 40;
                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 10);">
         
         <Label text="🤝 Sảnh Chờ Thách Đấu"
@@ -22,17 +26,34 @@
             <TextField fx:id="txtSearch"
                        promptText="🔍 Tìm kiếm người chơi theo tên..."
                        prefWidth="550"
-                       style="-fx-background-radius: 15; -fx-border-radius: 15;
-                              -fx-border-color: #d1d5db; -fx-border-width: 1; -fx-font-size: 16px;
-                              -fx-padding: 12 18; -fx-background-color: #f9fafb;"/>
+                       style="-fx-background-radius: 15; 
+                              -fx-border-radius: 15;
+                              -fx-border-color: #d1d5db; 
+                              -fx-border-width: 1; 
+                              -fx-font-size: 16px;
+                              -fx-padding: 12 18; 
+                              -fx-background-color: #f9fafb;"/>
             
             <Button text="Tìm Kiếm"
-                    style="-fx-background-color: #e0f2fe; -fx-text-fill: #0c4a6e;
-                           -fx-font-size: 16px; -fx-font-weight: 600; -fx-background-radius: 15;
-                           -fx-padding: 12 25; -fx-cursor: hand;"/>
+                    onAction="#handleSearchButton"
+                    style="-fx-background-color: #e0f2fe; 
+                            -fx-text-fill: #0c4a6e;
+                            -fx-font-size: 16px; 
+                            -fx-font-weight: 600; 
+                            -fx-background-radius: 15;
+                            -fx-padding: 12 25; -fx-cursor: hand;"/>
+            <Button text="Đổi mới"
+                    onAction="#reloadListPlayer"
+                    style="-fx-background-color: #ef4444; 
+                    -fx-text-fill: white; 
+                    -fx-font-size: 16px;
+                    -fx-font-weight: 600;
+                    -fx-background-radius: 15;
+                    -fx-padding: 12 25;
+                    -fx-cursor: hand;"/>   
         </HBox>
 
-        <HBox alignment="CENTER" spacing="0" 
+        <!-- <HBox alignment="CENTER" spacing="0" 
               style="-fx-background-color: #e5e7eb; -fx-background-radius: 15; -fx-padding: 5; 
                      -fx-pref-width: 550;">
             <Button fx:id="btnOnline"
@@ -48,7 +69,7 @@
                     style="-fx-background-color: transparent; -fx-text-fill: #4b5563;
                            -fx-font-weight: 700; -fx-background-radius: 10;
                            -fx-pref-width: 275; -fx-padding: 10 0; -fx-cursor: hand;"/>
-        </HBox>
+        </HBox> -->
 
         <TableView fx:id="tblPlayers"
                    prefWidth="750"
@@ -60,8 +81,8 @@
             <columns>
                 <TableColumn fx:id="colName" text="👤 Tên người chơi" prefWidth="250"
                              style="-fx-font-size: 15px; -fx-font-weight: 600;"/>
-                <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="150"
-                             style="-fx-font-size: 15px; -fx-alignment: CENTER;"/>
+                <!-- <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="150"
+                             style="-fx-font-size: 15px; -fx-alignment: CENTER;"/> -->
                 <TableColumn fx:id="colWins" text="🏆 Trận thắng" prefWidth="150"
                              style="-fx-font-size: 15px; -fx-alignment: CENTER;"/>
                 <TableColumn fx:id="colAction" text="Hành động" prefWidth="150"
@@ -73,8 +94,13 @@
         </TableView>
 
         <Button text="↩ Quay Lại"
-                style="-fx-background-color: #9ca3af; -fx-text-fill: white; -fx-font-size: 16px; 
-                       -fx-font-weight: 600; -fx-background-radius: 12; -fx-padding: 10 25; -fx-cursor: hand;"/>
-
+                onAction="#backToMenu"
+                style="-fx-background-color: #9ca3af; 
+                       -fx-text-fill: white; 
+                       -fx-font-size: 16px; 
+                       -fx-font-weight: 600; 
+                       -fx-background-radius: 12; 
+                       -fx-padding: 10 25; 
+                       -fx-cursor: hand;"/>
     </VBox>
 </VBox>

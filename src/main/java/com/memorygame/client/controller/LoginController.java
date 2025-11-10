@@ -1,21 +1,15 @@
-// src/main/java/com/memorygame/client/controller/LoginController.java
 package com.memorygame.client.controller;
 
-import java.io.IOException;
-
 import com.memorygame.client.NetworkClient;
+import com.memorygame.client.SceneManager;
 import com.memorygame.common.Message;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 public class LoginController {
 
@@ -24,21 +18,23 @@ public class LoginController {
     @FXML private Button btnLogin;
 
     private NetworkClient networkClient;
-    private Stage stage;
+    private SceneManager sceneManager;
+    
+    public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
+        this.sceneManager = sceneManager;
+        this.networkClient = networkClient;
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
+        // Kết nối với server ngay khi vào màn hình
+        if (!networkClient.isConnected()) {
+            networkClient.connect();
+        }
     }
-
-    @FXML
-    private void initialize() {
-        networkClient = new NetworkClient();
-        networkClient.setMessageListener(this::handleServerMessage);
-    }
+    
     @FXML
     private void handleRegister() {
-        showAlert("Đăng ký tài khoản mới\n\nTính năng sẽ có trong bản 2.0!\nEmail: support@mindflow.vn");
+        sceneManager.showRegisterScene();
     }
+
     @FXML
     private void handleLogin() {
         String username = txtUsername.getText().trim();
@@ -49,6 +45,7 @@ public class LoginController {
             return;
         }
 
+        // Kiểm tra kết nối
         if (!networkClient.isConnected() && !networkClient.connect()) {
             showAlert("Không thể kết nối server!");
             return;
@@ -62,31 +59,13 @@ public class LoginController {
         btnLogin.setText("Đang đăng nhập...");
     }
 
-    private void handleServerMessage(Message msg) {
-        Platform.runLater(() -> {
-            if ("S_LOGIN_RESPONSE".equals(msg.getType())) {
-                Boolean success = (Boolean) msg.getPayload();
-                if (Boolean.TRUE.equals(success)) {
-                    goToMainMenu();
-                } else {
-                    resetLoginButton();
-                    showAlert("Sai tài khoản hoặc mật khẩu!");
-                }
-            }
-        });
+    public void onLoginSuccess() {
+        sceneManager.showMainMenuScene();
     }
 
-    private void goToMainMenu() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainMenuScene.fxml"));
-            Scene scene = new Scene(loader.load(), 1000, 700);
-            stage.setScene(scene);
-            stage.setTitle("MindFlow Arena");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Lỗi tải menu!");
-        }
+    public void onLoginFail(String reason) {
+        resetLoginButton();
+        showAlert(reason); 
     }
 
     private void resetLoginButton() {
@@ -98,9 +77,5 @@ public class LoginController {
         Alert a = new Alert(Alert.AlertType.WARNING, msg, ButtonType.OK);
         a.setHeaderText(null);
         a.show();
-    }
-
-    public void shutdown() {
-        if (networkClient != null) networkClient.disconnect();
     }
 }
