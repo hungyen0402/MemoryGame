@@ -79,9 +79,14 @@ public class GameSession implements Serializable {
         settings.put("thinkTime", displayTimes);
         settings.put("totalRounds", totalRounds);
         settings.put("waitTime", waitTimes);
-        
-        server.sendMessageToPlayer(player1, new Message("S_PRACTICE_START", settings));
-
+        if(isPractice){
+            server.sendMessageToPlayer(player1, new Message("S_PRACTICE_START", settings));
+        }else{
+            settings.put("opponentUsername", player2); // Player1 thấy Player2
+            server.sendMessageToPlayer(player1, new Message("S_CHALLENGE_START", settings));
+            settings.put("opponentUsername", player1); // Player2 thấy Player1
+            server.sendMessageToPlayer(player2, new Message("S_CHALLENGE_START", settings));
+        }
         // 2. Bắt đầu vòng đầu tiên (sau 1 giây)
         scheduleNextRound(1000);
     }

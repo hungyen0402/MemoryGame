@@ -172,19 +172,20 @@ public class Server {
 
         // ✅ TẠO GAME SESSION
         GameSession session = new GameSession(inviter, acceptor, inviteData, this, false);
+        session.start();
         playerToSession.put(inviter, session);
         playerToSession.put(acceptor, session);
 
         // ✅ GỬI S_CHALLENGE_START CHO CẢ 2 NGƯỜI
-        Map<String, Object> gameInfoForInviter = new HashMap<>(inviteData);
-        gameInfoForInviter.put("opponentUsername", acceptor.getUsername());
-        sendMessageToPlayer(inviter, new Message("S_CHALLENGE_START", gameInfoForInviter));
+        // Map<String, Object> gameInfoForInviter = new HashMap<>(inviteData);
+        // gameInfoForInviter.put("opponentUsername", acceptor.getUsername());
+        // sendMessageToPlayer(inviter, new Message("S_CHALLENGE_START", gameInfoForInviter));
 
-        Map<String, Object> gameInfoForAcceptor = new HashMap<>(inviteData);
-        gameInfoForAcceptor.put("opponentUsername", inviter.getUsername());
-        sendMessageToPlayer(acceptor, new Message("S_CHALLENGE_START", gameInfoForAcceptor));
+        // Map<String, Object> gameInfoForAcceptor = new HashMap<>(inviteData);
+        // gameInfoForAcceptor.put("opponentUsername", inviter.getUsername());
+        // sendMessageToPlayer(acceptor, new Message("S_CHALLENGE_START", gameInfoForAcceptor));
 
-        System.out.println("✅ TRẬN ĐẤU BẮT ĐẦU: " + inviter.getUsername() + " vs " + acceptor.getUsername());
+        System.out.println("✅ TRAN DAU BAT DAU: " + inviter.getUsername() + " vs " + acceptor.getUsername());
 
         // Cập nhật lobby cho người khác
         broadcastOnlineCount();

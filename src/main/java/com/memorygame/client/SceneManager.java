@@ -205,7 +205,9 @@ public class SceneManager implements NetworkClient.MessageListener {
         
         else if (currentController instanceof ChallengeGameController c) {
             switch (type) {
-
+                case "S_CHALLENGE_START" -> {
+                    
+                }
             }
         }
         
