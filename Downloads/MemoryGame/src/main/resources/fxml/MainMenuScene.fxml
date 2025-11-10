@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox style="-fx-background-color: #f7f9fb; -fx-font-family: 'Roboto', 'Segoe UI';" 
+      xmlns="http://javafx.com/javafx/21" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.memorygame.client.controller.MainMenuController"
+      alignment="TOP_CENTER">
+
+    <VBox alignment="TOP_CENTER" spacing="50" style="-fx-padding: 60 40 40 40;" maxWidth="850">
+        
+        <VBox alignment="CENTER" spacing="10">
+            <Label text="MindFlow Arena" 
+                   style="-fx-font-size: 38px; -fx-font-weight: 900; -fx-text-fill: #1f2937;"/>
+            <Label text="Sẵn sàng thử thách trí nhớ của bạn?" 
+                   style="-fx-font-size: 18px; -fx-text-fill: #6b7280; -fx-font-weight: 500;"/>
+        </VBox>
+
+        <HBox alignment="CENTER" spacing="40">
+            <Button onAction="#openPractice" prefHeight="150" prefWidth="220" 
+                    style="-fx-background-color: #10b981; -fx-text-fill: white; 
+                           -fx-font-size: 20px; -fx-font-weight: 800; -fx-background-radius: 15;
+                           -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.4), 15, 0.1, 0, 5);"
+                    text="Luyện Tập" />
+            <Button onAction="#openChallenge" prefHeight="150" prefWidth="220" 
+                    style="-fx-background-color: #7c3aed; -fx-text-fill: white; 
+                           -fx-font-size: 20px; -fx-font-weight: 800; -fx-background-radius: 15;
+                           -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.4), 15, 0.1, 0, 5);"
+                    text="Thách Đấu" />
+            <Button onAction="#openLeaderboard" prefHeight="150" prefWidth="220" 
+                    style="-fx-background-color: #3b82f6; -fx-text-fill: white; 
+                           -fx-font-size: 20px; -fx-font-weight: 800; -fx-background-radius: 15;
+                           -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.4), 15, 0.1, 0, 5);"
+                    text="Bảng Xếp Hạng" />
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="150" 
+              style="-fx-background-color: #ffffff; -fx-padding: 30 40; -fx-background-radius: 15;
+                     -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
+            
+            <VBox spacing="8">
+                <Label text="Thống Kê Cá Nhân" 
+                       style="-fx-font-weight: 700; -fx-font-size: 18px; -fx-text-fill: #1f2937;" />
+                <Label text="Tổng trận thắng:" style="-fx-text-fill: #4b5563; -fx-font-size: 15px;"/>
+                <Label fx:id="lblTotalWins" text="58" 
+                       style="-fx-font-weight: 800; -fx-font-size: 22px; -fx-text-fill: #10b981;"/>
+            </VBox>
+
+            <VBox spacing="8">
+                <Label text="Trạng Thái Hệ Thống" 
+                       style="-fx-font-weight: 700; -fx-font-size: 18px; -fx-text-fill: #1f2937;" />
+                <Label text="Người chơi trực tuyến:" style="-fx-text-fill: #4b5563; -fx-font-size: 15px;"/>
+                <Label fx:id="lblOnlineCount" text="12" 
+                       style="-fx-font-weight: 800; -fx-font-size: 22px; -fx-text-fill: #f59e0b;"/>
+            </VBox>
+        </HBox>
+        
+        <Button text="Đăng Xuất" onAction="#logout"
+                style="-fx-background-color: transparent; -fx-text-fill: #ef4444; 
+                       -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+    </VBox>
+</VBox>
