@@ -12,7 +12,7 @@ public class VocabularyDAO {
         StringBuilder sql = new StringBuilder("SELECT * FROM Vocabulary");
 
         if (excludedIds != null && !excludedIds.isEmpty()) {
-            sql.append("WHERE id NOT IN ("); 
+            sql.append(" WHERE id NOT IN (");
             String placeholders = String.join(",", Collections.nCopies(excludedIds.size(), "?")); 
             sql.append(placeholders); 
             sql.append(")"); 
@@ -44,6 +44,7 @@ public class VocabularyDAO {
         } catch (Exception e) {
             e.printStackTrace(); 
             System.err.println("Lỗi khi lấy vocabulary ngẫu nhiên: " + e.getMessage());
+            System.err.println("TRuy van loi sql" + sql.toString());
         }
         return null; 
     }

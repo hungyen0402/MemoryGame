@@ -185,6 +185,55 @@ public class Server {
         broadcastOnlineList();
     }
 
+    public synchronized void createChallengeSession(Player player1, Player player2, Map<String, Object> settings) {
+        if (player1 == null || player2 == null) return;
+
+        // Cập nhật trạng thái
+        player1.setStatus(PlayerStatus.BUSY);
+        player2.setStatus(PlayerStatus.BUSY);
+        playerDAO.updatePlayerStatus(player1.getId(), PlayerStatus.BUSY);
+        playerDAO.updatePlayerStatus(player2.getId(), PlayerStatus.BUSY);
+
+        // Tạo game session
+        GameSession newSession = new GameSession(player1, player2, settings, this);
+        playerToSession.put(player1, newSession);
+        playerToSession.put(player2, newSession);
+
+        System.out.println("Bat dau game Thach dau: " + player1.getUsername() + " vs " + player2.getUsername());
+
+        // Bắt đầu game (GameSession sẽ tự gửi S_CHALLENGE_START)
+        newSession.start();
+
+        // Cập nhật sảnh chờ
+        broadcastOnlineList();
+    }
+
+    /**
+     * Dọn dẹp session Thách đấu (được gọi bởi GameSession)
+     */
+    public synchronized void removeChallengeSession(GameSession session) {
+        if (session == null || session.isPractice()) return;
+
+        Player player1 = session.getPlayer1();
+        Player player2 = session.getPlayer2();
+
+        playerToSession.remove(player1);
+        playerToSession.remove(player2);
+
+        // Cập nhật trạng thái người chơi
+        if (player1 != null) {
+            player1.setStatus(PlayerStatus.ONLINE);
+            playerDAO.updatePlayerStatus(player1.getId(), PlayerStatus.ONLINE);
+        }
+        if (player2 != null) {
+            player2.setStatus(PlayerStatus.ONLINE);
+            playerDAO.updatePlayerStatus(player2.getId(), PlayerStatus.ONLINE);
+        }
+
+        // Cập nhật sảnh chờ
+        broadcastOnlineList();
+    }
+
     /**
      * Người chơi chủ động rời game (luyện tập hoặc thách đấu)
      */
@@ -194,9 +243,8 @@ public class Server {
         GameSession session = playerToSession.get(player);
         if (session != null) {
             if (session.isPractice()) {
-                session.leaveGame(); // Sẽ tự gọi removePracticeSession
+                session.leaveGame(player); // Sẽ tự gọi removePracticeSession
             } else {
-                // TODO: Xử lý rời game thách đấu (báo cho người kia)
             }
         }
     }
@@ -240,6 +288,22 @@ public class Server {
             handlerToPlayer.remove(client);
         }
     }
+    public synchronized void handleAcceptInvite(Player acceptor, Map<String, Object> inviteData) {
+        String inviterUsername = (String) inviteData.get("inviterUsername");
+
+        // Tìm người mời
+        ClientHandler inviterHandler = onlinePlayers.get(inviterUsername);
+        Player inviter = (inviterHandler != null) ? handlerToPlayer.get(inviterHandler) : null;
+
+        if (inviter == null) {
+            // Người mời đã thoát
+            acceptor.setStatus(PlayerStatus.ONLINE);
+            playerDAO.updatePlayerStatus(acceptor.getId(), PlayerStatus.ONLINE);
+            sendMessageToPlayer(acceptor, new Message("S_INVITE_FAIL", "Người mời đã thoát."));
+            return;
+        }
+    }
+
     // Get playerDAO
     public PlayerDAO getPlayerDAO() {
         return this.playerDAO; 

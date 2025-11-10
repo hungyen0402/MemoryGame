@@ -108,16 +108,16 @@ public class ClientHandler implements Runnable {
             case "INVITE" -> {
                 if (this.player != null) {
                     @SuppressWarnings("unchecked")
-                    Map<String, Object> invitePayload = (Map<String, Object>) message.getPayload(); 
+                    Map<String, Object> invitePayload = (Map<String, Object>) message.getPayload();
                     // Chuyển yêu cầu mời cho server
-                    boolean success_invite = server.handleInvite(this.player, invitePayload); 
+                    boolean success_invite = server.handleInvite(this.player, invitePayload);
                     if (success_invite) {
                         System.out.println(this.player.getUsername() + " GUI LOI MOI THACH DAU THANH CONG TOI " + invitePayload.get("opponentUsername"));
                     } else {
                         System.out.println(this.player.getUsername() + " GUI LOI MOI THACH DAU KHONG THANH CONG TOI " + invitePayload.get("opponentUsername"));
                     }
                 }
-                break; 
+                break;
             }
             case "C_SQL_PLAYER" -> {
                 List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby(this.player.getId());
@@ -152,22 +152,32 @@ public class ClientHandler implements Runnable {
                 }
             }
             case "C_START_PRACTICE" -> {
-                System.out.println("Nhan duoc C_START_PRACTICE tu " + this.player.getUsername()); 
+                System.out.println("Nhan duoc C_START_PRACTICE tu " + this.player.getUsername());
                 @SuppressWarnings("unchecked")
-                Map<String, Object> settings = (Map<String, Object>) message.getPayload();  
+                Map<String, Object> settings = (Map<String, Object>) message.getPayload();
                 server.handleStartPractice(this.player, settings);
-                break; 
+                break;
             }
-            case "SUBMIT_ANSWER" -> {
+            case "C_SUBMIT_ANSWER" -> { // Client gửi "C_SUBMIT_ANSWER"
                 String answer = (String) message.getPayload();
                 GameSession session = server.getSessionForPlayer(this.player);
                 if (session != null) {
-                    session.submitAnswer(answer);
+                    // Phải truyền this.player để GameSession biết ai trả lời
+                    session.submitAnswer(this.player, answer);
                 } else {
-                    System.err.println("Nhan duoc SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
+                    System.err.println("Nhan duoc C_SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
                 }
-                break; 
+                break;
             }
+            case "C_ACCEPT_INVITE" -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> data = (Map<String, Object>) message.getPayload();
+                server.handleAcceptInvite(this.player, data);
+            }
+//            case "C_DECLINE_INVITE" -> {
+//                String inviterUsername = (String) message.getPayload();
+//                server.handleDeclineInvite(this.player, inviterUsername);
+//            }
             case "C_LEAVE_GAME" -> {
                 System.out.println("Nhan duoc C_LEAVE_GAME tu " + player.getUsername()); 
                 server.handleLeaveGame(this.player);

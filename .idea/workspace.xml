@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b10780e-6a99-4a91-92d4-19f9f765ddd7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/client/NetworkClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/client/NetworkClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/client/controller/MainMenuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/client/controller/MainMenuController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/client/controller/ChallengeGameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/client/controller/ChallengeGameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/common/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/common/GameSession.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/server/ClientHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/server/Server.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/memorygame/server/VocabularyDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/memorygame/server/VocabularyDAO.java" afterDir="false" />
@@ -31,32 +32,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.ClientApp.executor": "Run",
-    "Application.ServerApp.executor": "Run",
-    "Maven.memory-game [org.apache.maven.plugins:maven-clean-plugin:3.2.0:clean].executor": "Run",
-    "Maven.memory-game [org.openjfx:javafx-maven-plugin:0.0.8:jlink].executor": "Run",
-    "Maven.memory-game [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "task3__database__error",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/GameJava/MemoryGame",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.ClientApp.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ServerApp.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.memory-game [org.apache.maven.plugins:maven-clean-plugin:3.2.0:clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.memory-game [org.openjfx:javafx-maven-plugin:0.0.8:jlink].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.memory-game [org.openjfx:javafx-maven-plugin:0.0.8:run].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;task4__error&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/GameJava/MemoryGame&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Application.ServerApp">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="memory-game" />
@@ -175,6 +176,8 @@
       <workItem from="1762683595726" duration="5353000" />
       <workItem from="1762697068543" duration="339000" />
       <workItem from="1762697890728" duration="3803000" />
+      <workItem from="1762783846801" duration="253000" />
+      <workItem from="1762784125463" duration="8172000" />
     </task>
     <servers />
   </component>

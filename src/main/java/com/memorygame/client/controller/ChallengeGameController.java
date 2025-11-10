@@ -64,7 +64,6 @@ public class ChallengeGameController {
     @FXML
     public void initialize() {
         lblPlayerScore.setText("0");
-        lblPlayerScore.setText("0");
         lblOpponentScore.setText("0");
         lblCurrentRound.setText("0");
         lblCountdown.setText("0s");
@@ -188,17 +187,18 @@ public class ChallengeGameController {
         this.currentState = state;
 
         switch (state) {
-            case MEMORIZING -> {}
-            case WAITING -> {}
-            case ENDED -> {
+            case MEMORIZING:
+            case WAITING:
+            case ENDED:
                 txtAnswer.setDisable(true);
                 btnSend.setDisable(true);
-            }
-            case ANSWERING -> {
+                break;
+
+            case ANSWERING:
                 txtAnswer.setDisable(false);
                 btnSend.setDisable(false);
                 txtAnswer.requestFocus(); // Tự động focus vào ô trả lời
-            }
+                break;
         }
     }
 
