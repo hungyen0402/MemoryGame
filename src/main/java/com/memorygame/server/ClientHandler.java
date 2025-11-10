@@ -119,7 +119,7 @@ public class ClientHandler implements Runnable {
                 break; 
             }
             case "C_SQL_PLAYER" -> {
-                List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby();
+                List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby(this.player.getId());
                 Message message2 = new Message("S_ONLINE_LIST", onlinePlayers); 
                 sendMessage(message2);
             }

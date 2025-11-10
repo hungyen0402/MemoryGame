@@ -47,13 +47,13 @@ public class LeaderboardController {
         setupRankColumn();
 
         tblRank.setItems(playerList);
-
-        loadLeaderboardData();
     }
 
     public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
         this.sceneManager = sceneManager;
         this.networkClient = networkClient;
+
+        loadLeaderboardData();
     }
 
     /**NetworkClient sẽ gọi nó để cập nhật BXH khi nhận được dữ liệu BXH */

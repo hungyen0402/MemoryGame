@@ -76,18 +76,20 @@ public class LobbyController {
     public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
         this.sceneManager = sceneManager;
         this.networkClient = networkClient;
+
+        networkClient.sendMessage(new Message("C_SQL_PLAYER", null));
     }
 
 
-    @FXML
-    private void showOnlinePlayers() {
+    // @FXML
+    // private void showOnlinePlayers() {
 
-    }
+    // }
 
-    @FXML
-    private void showBusyPlayers() {
+    // @FXML
+    // private void showBusyPlayers() {
 
-    }
+    // }
 
     @FXML
     private void backToMenu() {
