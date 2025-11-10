@@ -83,7 +83,7 @@ public class Server {
                 // (cái này là việc của ClienHandler)
                 // client.sendMessage(new Message("LOGIN_SUCCESS", player)); 
                 // Thông báo tới các user khác
-                broadcastOnlineList(); 
+                broadcastOnlineCount(); 
 
                 return true; 
             }
@@ -189,7 +189,7 @@ public class Server {
         System.out.println("✅ TRẬN ĐẤU BẮT ĐẦU: " + inviter.getUsername() + " vs " + acceptor.getUsername());
 
         // Cập nhật lobby cho người khác
-        broadcastOnlineList();
+        broadcastOnlineCount();
     }
     // Xử lý khi người nhận TỪ CHỐI
     public synchronized void handleDeclineInvite(Player decliner, String inviterUsername) {
@@ -211,13 +211,14 @@ public class Server {
         
     }
     // Gửi message 
-    public void broadcastOnlineList() {
+    public void broadcastOnlineCount() {
         System.out.println("Dang cap nhap va gui danh sach online ...."); 
 
-        List<Player> onlinePlayerList = new ArrayList<>(handlerToPlayer.values());
-        Message message = new Message("S_ONLINE_LIST", onlinePlayerList); 
+        int count = playerDAO.countPlayerOnline();
+        Message countMessage = new Message("S_ONLINE_COUNT", count);
+
         for (ClientHandler handler : handlerToPlayer.keySet()) {
-            handler.sendMessage(message);
+            handler.sendMessage(countMessage);
         }
     }
 // --- CÁC HÀM MỚI CHO LOGIC GAME ---
@@ -242,7 +243,7 @@ public class Server {
         newSession.start();
         
         // Cập nhật sảnh chờ cho người khác
-        broadcastOnlineList();
+        broadcastOnlineCount();
     }
 
     /**
@@ -272,7 +273,7 @@ public class Server {
         playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.ONLINE);
         
         // Cập nhật sảnh chờ
-        broadcastOnlineList();
+        broadcastOnlineCount();
     }
 
     /**
@@ -293,7 +294,12 @@ public class Server {
             playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.OFFLINE);;
             onlinePlayers.remove(player.getUsername());
             handlerToPlayer.remove(client);
-            broadcastOnlineList();
+            broadcastOnlineCount();
+
+            Message removeMessage = new Message("S_PLAYER_LOGGED_OUT", player);
+            for (ClientHandler handler : handlerToPlayer.keySet()) {
+                handler.sendMessage(removeMessage);
+            }
         }
         else{
             System.out.println("Client chua dang nhap da ngat ket noi, chi dong socket.");

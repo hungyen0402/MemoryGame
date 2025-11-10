@@ -175,7 +175,7 @@ public class SceneManager implements NetworkClient.MessageListener {
         
         else if (currentController instanceof MainMenuController c) {
             if (type.equals("S_ONLINE_COUNT")) {
-                c.updateOnlineCount((int) payload); // phải sửa lại 
+                c.updateOnlineCount((int) payload);
             }
         }
         
@@ -192,6 +192,8 @@ public class SceneManager implements NetworkClient.MessageListener {
             // THÊM DÒNG NÀY:
             else if (type.equals("S_RECEIVE_INVITE")) {
                 showInviteDialog((Map<String, Object>) payload);
+            } else if (type.equals("S_PLAYER_LOGGED_OUT")) {
+                c.removePlayerFromList((Player) payload);
             }
         }
         
