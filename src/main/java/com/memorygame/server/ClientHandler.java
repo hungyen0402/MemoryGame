@@ -158,7 +158,7 @@ public class ClientHandler implements Runnable {
                 server.handleStartPractice(this.player, settings);
                 break; 
             }
-            case "SUBMIT_ANSWER" -> {
+            case "C_SUBMIT_ANSWER" -> {
                 String answer = (String) message.getPayload();
                 GameSession session = server.getSessionForPlayer(this.player);
                 if (session != null) {

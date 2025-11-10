@@ -173,7 +173,7 @@ public class Server {
         playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.BUSY);
         
         // Tạo game session mới
-        GameSession newSession = new GameSession(player, settings, this);
+        GameSession newSession = new GameSession(player, null, settings, this);
         playerToSession.put(player, newSession);
         
         System.out.println(player.getUsername() + " bat dau luyen tap.");

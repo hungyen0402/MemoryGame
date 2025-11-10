@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.Set;
+
 import com.memorygame.common.Vocabulary;
 
 public class VocabularyDAO {
@@ -12,13 +13,13 @@ public class VocabularyDAO {
         StringBuilder sql = new StringBuilder("SELECT * FROM Vocabulary");
 
         if (excludedIds != null && !excludedIds.isEmpty()) {
-            sql.append("WHERE id NOT IN ("); 
+            sql.append(" WHERE id NOT IN ("); 
             String placeholders = String.join(",", Collections.nCopies(excludedIds.size(), "?")); 
             sql.append(placeholders); 
             sql.append(")"); 
         }
         sql.append(" ORDER BY RAND() LIMIT 1"); 
-        System.out.println("Truy vấn: " + sql.toString());
+        System.out.println("Truy van: " + sql.toString());
 
         // Thực hiện truy vấn
         // Đọc document PreparedStatement để hiểu rõ 
@@ -43,7 +44,8 @@ public class VocabularyDAO {
             } 
         } catch (Exception e) {
             e.printStackTrace(); 
-            System.err.println("Lỗi khi lấy vocabulary ngẫu nhiên: " + e.getMessage());
+            System.err.println("LOI KHI TRUY VAN NGAU NHIEN: " + e.getMessage());
+            System.err.println("Truy van loi: " + sql); 
         }
         return null; 
     }

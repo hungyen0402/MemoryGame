@@ -17,16 +17,16 @@ import javafx.util.Duration;
 
 public class PracticeGameController {
     @FXML
-    private Label lblRound; 
+    private Label lblRound; // Current round 
 
     @FXML
-    private Label lblPoints;
+    private Label lblPoints; // Tổng điểm 
 
     @FXML
-    private Label lblTimer;
+    private Label lblTimer; // Thời gian khả dụng để trả lời 
 
     @FXML
-    private Label lblWord;
+    private Label lblWord; // Vocabulary 
 
     @FXML
     private Label lblHint;
@@ -38,10 +38,10 @@ public class PracticeGameController {
     private Button btnSubmit;
 
     @FXML
-    private Label lblTotalRounds;
+    private Label lblTotalRounds; // Tổng số round 
 
     @FXML
-    private Label lblMemorizeTime;
+    private Label lblMemorizeTime; // Thời gian nhớ 
 
     private SceneManager sceneManager;
     private NetworkClient networkClient;

@@ -45,9 +45,9 @@ public class GameSession implements Serializable {
     /**
      * Constructor cho Game Luyện tập
      */
-    public GameSession(Player player, Map<String, Object> settings, Server server) {
-        this.player1 = player;
-        this.player2 = null;
+    public GameSession(Player player1, Player player2, Map<String, Object> settings, Server server) {
+        this.player1 = player1;
+        this.player2 = player2;
         this.isPractice = true;
         
         // Lấy cài đặt từ settings map (với giá trị mặc định)
