@@ -90,7 +90,11 @@ public class SceneManager implements NetworkClient.MessageListener {
     }
 
     public void showLobbyScene() {
-        loadAndShowScene("/fxml/LobbyScene.fxml");
+        LobbyController controller = (LobbyController) loadAndShowScene("/fxml/LobbyScene.fxml");
+        if (controller != null) {
+            Player currentPlayer = ClientState.getInstance().getCurrentPlayer();
+            controller.setCurrentPlayer(currentPlayer);
+        }
     }
 
     public void showLeaderboardScene() {

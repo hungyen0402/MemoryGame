@@ -56,6 +56,14 @@ public class LobbyController {
 
     private PlayerStatus currentStatusFilter = PlayerStatus.ONLINE;
 
+    // 1. THÊM: Biến lưu player hiện tại
+    private Player currentPlayer;
+
+    // 2. THÊM: Method để set player (gọi từ SceneManager)
+    public void setCurrentPlayer(Player player) {
+        this.currentPlayer = player;
+    }
+
     @FXML
     public void initialize() {
         colName.setCellValueFactory(new PropertyValueFactory<>("username")); // Tất cả phải khớp với tên biến
@@ -100,16 +108,22 @@ public class LobbyController {
     }
 
     @FXML
-    private void reloadListPlayer() {
+    public void reloadListPlayer() {
         networkClient.sendMessage(new Message("C_SQL_PLAYER", null));
     }
 
     // Gọi khi client nhận được S_ONLINE_LIST từ server
+    
     public void updateOnlineList(List<Player> players) {
         Platform.runLater(() -> {
             playerList.clear();
-            if (players != null) {
-                playerList.addAll(players);
+            if (players != null && currentPlayer != null) {
+                for (Player p : players) {
+                    // LỌC BỎ BẢN THÂN
+                    if (!p.getUsername().equals(currentPlayer.getUsername())) {
+                        playerList.add(p);
+                    }
+                }
             }
         });
     }
