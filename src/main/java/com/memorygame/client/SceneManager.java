@@ -208,6 +208,18 @@ public class SceneManager implements NetworkClient.MessageListener {
                 case "S_CHALLENGE_START" -> {
                     
                 }
+                case "S_NEW_ROUND_CHALLENGE" -> {
+                    Object[] data = (Object[]) payload;
+                    c.onNewRound((String) data[0], (int) data[1], (int) data[2]);
+                }
+                case "S_ANSWER_PHASE_CHALLENGE" -> {
+                    c.onAnswerPhase((int) payload);
+                }
+                case "S_SCORE_UPDATE_CHALLENGE" -> {
+                    // Payload: Integer newScore
+                    Object[] data = (Object[]) payload;
+                    c.onScoreUpdate((int) data[0], (int) data[1]);
+                }
             }
         }
         
@@ -238,16 +250,16 @@ public class SceneManager implements NetworkClient.MessageListener {
         // 8. XỬ LÝ CHO PRACTICE GAME (Màn hình chơi game) <-- PHẦN THIẾU
         else if (currentController instanceof PracticeGameController c) {
              switch (type) {
-                case "S_NEW_ROUND" -> {
+                case "S_NEW_ROUND_PRACTICE" -> {
                     // Payload: Object[] {word, round, memorizeTime}
                     Object[] data = (Object[]) payload;
                     c.onNewRound((String) data[0], (int) data[1], (int) data[2]);
                 }
-                case "S_ANSWER_PHASE" -> {
+                case "S_ANSWER_PHASE_PRACTICE" -> {
                     // Payload: Integer answerTime
                     c.onAnswerPhase((int) payload);
                 }
-                case "S_SCORE_UPDATE" -> {
+                case "S_SCORE_UPDATE_PRACTICE" -> {
                     // Payload: Integer newScore
                     c.onScoreUpdate((int) payload);
                 }

@@ -96,8 +96,8 @@ public class ChallengeGameController {
             lblPlayerScore.setText("0");
             lblOpponentScore.setText("0");
             lblCurrentRound.setText("01");
-            lblGameStatus.setText("Đang kết nối với " + opponentUsername + "...");
-            lblWord.setText("Chờ bắt đầu...");
+            // lblGameStatus.setText("Đang kết nối với " + opponentUsername + "...");
+            // lblWord.setText("Chờ bắt đầu...");
         });
 
         this.opponentUsername = opponentUsername;

@@ -82,9 +82,9 @@ public class GameSession implements Serializable {
         if(isPractice){
             server.sendMessageToPlayer(player1, new Message("S_PRACTICE_START", settings));
         }else{
-            settings.put("opponentUsername", player2); // Player1 thấy Player2
+            settings.put("opponentUsername", player2.getUsername()); // Player1 thấy Player2
             server.sendMessageToPlayer(player1, new Message("S_CHALLENGE_START", settings));
-            settings.put("opponentUsername", player1); // Player2 thấy Player1
+            settings.put("opponentUsername", player1.getUsername()); // Player2 thấy Player1
             server.sendMessageToPlayer(player2, new Message("S_CHALLENGE_START", settings));
         }
         // 2. Bắt đầu vòng đầu tiên (sau 1 giây)
@@ -113,8 +113,12 @@ public class GameSession implements Serializable {
         // 2. Gửi từ vựng cho client (Giai đoạn ghi nhớ)
         // Payload: Object[] {word, round, memorizeTime}
         Object[] roundData = {currentWord.getPhrase(), currentRound, (int) displayTimes};
-        server.sendMessageToPlayer(player1, new Message("S_NEW_ROUND", roundData));
-        
+        if (isPractice) {
+            server.sendMessageToPlayer(player1, new Message("S_NEW_ROUND_PRACTICE", roundData));
+        } else {
+            server.sendMessageToPlayer(player1, new Message("S_NEW_ROUND_CHALLENGE", roundData));
+            server.sendMessageToPlayer(player2, new Message("S_NEW_ROUND_CHALLENGE", roundData));
+        }
         // 3. Hẹn giờ để bắt đầu giai đoạn trả lời
         gameTimer.schedule(new TimerTask() {
             @Override
@@ -133,8 +137,12 @@ public class GameSession implements Serializable {
         // 1. Báo cho client biết để bật ô nhập liệu
         // Payload: Integer answerTime
         System.out.println("PLAYER TRA LOI CAU HOI"); 
-        server.sendMessageToPlayer(player1, new Message("S_ANSWER_PHASE", (int) waitTimes));
-
+        if (isPractice) {
+            server.sendMessageToPlayer(player1, new Message("S_ANSWER_PHASE_PRACTICE", (int) waitTimes));
+        } else {
+            server.sendMessageToPlayer(player1, new Message("S_ANSWER_PHASE_CHALLENGE", (int) waitTimes));
+            server.sendMessageToPlayer(player2, new Message("S_ANSWER_PHASE_CHALLENGE", (int) waitTimes));
+        }
         // 2. Hẹn giờ "hết giờ trả lời"
         gameTimer.schedule(new TimerTask() {
             @Override
@@ -193,7 +201,16 @@ public class GameSession implements Serializable {
         gameTimer = new Timer(); 
         
         // Không cộng điểm
-        server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", scores.get(player1)));
+        if (isPractice) {
+            server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_PRACTICE", scores.get(player1)));
+        } else {
+            Map<String, Object> score = new HashMap<>();
+            score.put("score1", scores.get(player1)); 
+            score.put("score2", scores.get(player2)); 
+            server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", score));
+            server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", score));
+        }
+        
         
         // Chờ 2 giây rồi bắt đầu vòng mới
         scheduleNextRound(2000);
