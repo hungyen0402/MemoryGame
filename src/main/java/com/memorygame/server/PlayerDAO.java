@@ -96,21 +96,21 @@ public class PlayerDAO {
                     pstm2.setInt(1, winner.getId());
                     int rows = pstm2.executeUpdate();
                     if (rows == 0) {
-                        System.err.println("Cảnh báo: Không tìm thấy Player ID " + winner.getId() + " để tăng win"); 
+                        System.err.println("Canh bao: Khong tim thay Player ID " + winner.getId() + " de tang so tran win"); 
                     }
                 }
             }
 
             conn.commit();
-            System.out.println("Lưu trận đấu thành công: " + player1.getUsername() + " vs " + player2.getUsername());
+            System.out.println("Luu tran dau thanh cong: " + player1.getUsername() + " vs " + player2.getUsername());
         } catch (SQLException e) {
-            System.err.println("Lỗi khi lưu kết quả trận đấu! Đang rollback...");
+            System.err.println("Loi khi luu ket qua tran dau! Dang rollback...");
             e.printStackTrace();
             // Rollback nếu có lỗi
             if (conn != null) {
                 try {
                     conn.rollback();
-                    System.err.println("Đã rollback giao dịch.");
+                    System.err.println("Da rollback giao dich.");
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -162,7 +162,7 @@ public class PlayerDAO {
                     onlinePlayers.add(player);
                 }
             }
-            System.out.println("📋 Tìm thấy " + onlinePlayers.size() + " players ONLINE");
+            System.out.println("📋 Tim thay " + onlinePlayers.size() + " players ONLINE");
         } catch (Exception e) {
             e.printStackTrace(); 
         }
@@ -184,7 +184,7 @@ public class PlayerDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi đếm người chơi ONLINE:");
+            System.err.println("Loi khi dem nguoi choi ONLINE:");
             e.printStackTrace();
         }
 
@@ -204,7 +204,7 @@ public class PlayerDAO {
             int rowAffected = pstm.executeUpdate(); 
             return rowAffected > 0; // Trả về true nếu có 1 hàng bị ảnh hưởng (thêm thành công)
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tạo player: " + e.getMessage());
+            System.err.println("Loi khi tao Player: " + e.getMessage());
             return false;
         }
     }

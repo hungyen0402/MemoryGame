@@ -89,7 +89,7 @@ public class ChallengeConfigController {
         invitePayload.put("waitTime", waitTime);
 
         networkClient.sendMessage(new Message("INVITE", invitePayload));
-
+        System.out.println("DA GUI MESSAGE INVITE TOI CLIENTHANDLER"); 
         sceneManager.showLobbyScene();
     }
 

@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
+import java.util.Map;
 
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
@@ -42,7 +43,7 @@ public class ClientHandler implements Runnable {
                 processMessage(clientMessage); 
             }
         } catch (SocketException e) {
-            System.out.println("Client đã ngắt kết nối: " + socket.getInetAddress()); 
+            System.out.println("Client da ngat ket noi: " + socket.getInetAddress()); 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
@@ -100,7 +101,17 @@ public class ClientHandler implements Runnable {
                 }
             }
             case "INVITE" -> {
-                // lÀM SAU 
+                if (this.player != null) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> invitePayload = (Map<String, Object>) message.getPayload(); 
+                    // Chuyển yêu cầu mời cho server
+                    boolean success_invite = server.handleInvite(this.player, invitePayload); 
+                    if (success_invite) {
+                        System.out.println(this.player.getUsername() + " GUI LOI MOI THACH DAU THANH CONG TOI " + invitePayload.get("opponentUsername"));
+                    } else {
+                        System.out.println(this.player.getUsername() + " GUI LOI MOI THACH DAU KHONG THANH CONG TOI " + invitePayload.get("opponentUsername"));
+                    }
+                }
                 break; 
             }
             case "SUBMIT_ANSWER" -> {
