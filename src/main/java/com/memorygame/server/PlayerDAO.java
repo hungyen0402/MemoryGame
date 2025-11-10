@@ -141,15 +141,15 @@ public class PlayerDAO {
         }
     }
     // Method 4: Truy vấn player - "Đổi lại" tại LobbyScene 
-    public List<Player> getOnlinePlayersForLobby() {
+    public List<Player> getOnlinePlayersForLobby(int currentUserId) {
         List<Player> onlinePlayers = new ArrayList<>();
-        String sql = "SELECT id, username, status FROM Player WHERE status = ? LIMIT 50"; 
+        String sql = "SELECT id, username, status FROM Player WHERE status = ? AND id != ? LIMIT 50"; 
         
         try (Connection conn = DatabaseConnector.getConnection();
             PreparedStatement pstm = conn.prepareStatement(sql)) {
             
             pstm.setString(1, PlayerStatus.ONLINE.name()); 
-            
+            pstm.setInt(2, currentUserId); 
             try (ResultSet rs = pstm.executeQuery()) {
                 while (rs.next()) {
                     Player player = new Player(

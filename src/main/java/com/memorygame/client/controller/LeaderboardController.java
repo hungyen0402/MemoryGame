@@ -54,6 +54,7 @@ public class LeaderboardController {
     public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
         this.sceneManager = sceneManager;
         this.networkClient = networkClient;
+        initialize(); 
     }
 
     /**NetworkClient sẽ gọi nó để cập nhật BXH khi nhận được dữ liệu BXH */
@@ -80,6 +81,7 @@ public class LeaderboardController {
     private void loadLeaderboardData() {
         if (networkClient != null) {
             networkClient.sendMessage(new Message("C_GET_LEADERBOARD", null));
+            System.out.println("Leaderboard controller GUI MESSAGE TOI CLIENTHANDLER"); 
         } else {
             System.out.println("networkClient là null");
         }

@@ -18,6 +18,7 @@ import com.memorygame.common.Player;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class SceneManager implements NetworkClient.MessageListener {
@@ -152,7 +153,14 @@ public class SceneManager implements NetworkClient.MessageListener {
             if (type.equals("S_ONLINE_LIST")) {
                 c.updateOnlineList((List<Player>) payload);
             }
-
+            else if (type.equals("S_INVITE_SEND")) {
+                // payload là một String thông báo thành công
+                c.showInviteStatusAlert("Đã Gửi Lời Mời", (String) payload, AlertType.INFORMATION);
+            }
+            else if (type.equals("S_INVITE_FAIL")) {
+                // payload là một String lý do thất bại
+                c.showInviteStatusAlert("Gửi Lời Mời Thất Bại", (String) payload, AlertType.ERROR);
+            }
         }
         
         else if (currentController instanceof LeaderboardController c) {
@@ -177,6 +185,12 @@ public class SceneManager implements NetworkClient.MessageListener {
                 }
             }
         }
-        // (Các màn hình Practice không cần nhận tin nhắn)
+        else if (currentController instanceof PracticeSettingsController c) {
+            switch (type) {
+                case "C_START_PRACTICE" -> {
+                    
+                }
+            }
+        }
     }
 }

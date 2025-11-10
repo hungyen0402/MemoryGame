@@ -20,7 +20,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 public class LobbyController {
     @FXML
     private TextField txtSearch;
@@ -76,6 +78,7 @@ public class LobbyController {
     public void setupController(SceneManager sceneManager, NetworkClient networkClient) {
         this.sceneManager = sceneManager;
         this.networkClient = networkClient;
+        networkClient.sendMessage(new Message("C_SQL_PLAYER", null));
     }
 
 
@@ -174,5 +177,15 @@ public class LobbyController {
 
     private void handleChallengePlayer(Player opponent) {
         sceneManager.showChallengeConfigScene(opponent);
+    }
+    // Hàm mới được thêm vào: 12h 10/11
+    /*Hiển thị alert (được gọi từ SceneManager) */
+    public void showInviteStatusAlert(String title, String content, AlertType type) {
+        Platform.runLater(() -> {
+            Alert a = new Alert(type, content, ButtonType.OK); 
+            a.setTitle(title); 
+            a.setHeaderText(null); 
+            a.showAndWait();            
+        });
     }
 }

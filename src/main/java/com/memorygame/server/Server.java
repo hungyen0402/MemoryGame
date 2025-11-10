@@ -138,6 +138,7 @@ public class Server {
         } else {
             if (inviterHandler != null) {
                 String reason = (opponent == null) ? "Người chơi không tồn tại hoặc đã offline." : "Người chơi đang bận."; 
+                System.out.println("Nguoi choi khong ton tai hoac da offline");
                 inviterHandler.sendMessage(new Message("S_INVITE_FAIL", reason));
             }
             return false;
