@@ -187,6 +187,60 @@ public class GameSession implements Serializable {
         scheduleNextRound(2000);
     }
 
+    public synchronized void submitAnswerChallenge(String answer1, String answer2) {
+        // Chỉ xử lý nếu đang ở trạng thái chờ trả lời
+        if (this.roundState != RoundState.WAITING_FOR_ANSWER) {
+            return; 
+        }
+        
+        this.roundState = RoundState.WAITING_FOR_NEXT_ROUND;
+        gameTimer.cancel(); // Hủy tất cả các hẹn giờ (quan trọng là hủy cái timesUp())
+        gameTimer = new Timer(); // Tạo lại timer mới cho vòng sau
+        Map<String, Object> score = new HashMap<>();
+
+        // Tính điểm
+        if (answer1 != null && currentWord != null && answer1.equalsIgnoreCase(currentWord.getPhrase())) {
+            // Trả lời đúng
+            // Thêm player2 cho chế độ Challenge
+            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
+            int currentScore = scores.get(player1);
+            int newScore = currentScore + 10; // (Bạn có thể tính điểm phức tạp hơn)
+            scores.put(player1, newScore);
+            
+            // Gửi điểm mới cho client
+            // server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", newScore));
+        } else {
+            // Trả lời sai
+            // Không gửi gì cả, hoặc gửi điểm cũ
+            System.out.println("DA CHAM DIEM, KET QUA SAI"); 
+            // server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", scores.get(player1)));
+        }
+        if (answer2 != null && currentWord != null && answer2.equalsIgnoreCase(currentWord.getPhrase())) {
+            // Trả lời đúng
+            // Thêm player2 cho chế độ Challenge
+            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
+            int currentScore = scores.get(player2);
+            int newScore = currentScore + 10; // (Bạn có thể tính điểm phức tạp hơn)
+            scores.put(player2, newScore);
+            
+            // Gửi điểm mới cho client
+            // server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE", newScore));
+        } else {
+            // Trả lời sai
+            // Không gửi gì cả, hoặc gửi điểm cũ
+            System.out.println("DA CHAM DIEM, KET QUA SAI"); 
+            // server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE", scores.get(player2)));
+        }
+        score.put("score1", scores.get(player1)); 
+        score.put("score2", scores.get(player2)); 
+        System.out.println("DIEM ROUND THU " + currentRound + " LA: " + (int) score.get("score1"));
+        System.out.println("DIEM ROUND THU " + currentRound + " LA: " + (int) score.get("score2"));
+        server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", score)); 
+        server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", score));
+        // Chờ 2 giây rồi bắt đầu vòng mới
+        scheduleNextRound(2000);
+    }
+
     /**
      * Xử lý khi hết giờ trả lời
      */

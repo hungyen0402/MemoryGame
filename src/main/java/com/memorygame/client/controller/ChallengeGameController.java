@@ -165,6 +165,8 @@ public class ChallengeGameController {
         lblOpponentScore.setText(String.valueOf(opponentScore));
         lblGameStatus.setText("Chờ vòng tiếp theo...");
         setUIState(GameState.WAITING);
+        System.out.println("DIEM KHI O CLIENT " + playerScore); 
+        System.out.println("DIEM KHI O CLIENT " + opponentScore);
     }
 
     /*Kết thúc game */
@@ -198,7 +200,16 @@ public class ChallengeGameController {
         // Tự động quay về Menu
         sceneManager.showMainMenuScene();
     }
+    private void submitAnswer() {
+        if (currentState != GameState.ANSWERING) return;
+        if (gameTimer != null) gameTimer.stop();
 
+        String answer = txtAnswer.getText().trim();
+        networkClient.sendMessage(new Message("C_SUBMIT_ANSWER", answer));
+
+        setUIState(GameState.WAITING);
+        txtAnswer.clear();
+    }
     /*Cập nhật trạng thái giao diện (bật tắt input) */
     private void setUIState(GameState state) {
         this.currentState = state;
