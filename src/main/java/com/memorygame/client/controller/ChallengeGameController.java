@@ -1,5 +1,7 @@
 package com.memorygame.client.controller;
 
+import java.util.Map;
+
 import com.memorygame.client.ClientState;
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
@@ -52,6 +54,9 @@ public class ChallengeGameController {
     private NetworkClient networkClient;
     private Timeline gameTimer;
     private int remainingTime;
+    private GameSession session;
+    private boolean isPlayer1;   
+
 
     private enum GameState {
         MEMORIZING, // Đang ghi nhớ
@@ -61,17 +66,16 @@ public class ChallengeGameController {
     }
     private GameState currentState;
 
+    private String opponentUsername;
+
     @FXML
     public void initialize() {
-        lblPlayerScore.setText("0");
-        lblPlayerScore.setText("0");
-        lblOpponentScore.setText("0");
-        lblCurrentRound.setText("0");
+        // Chỉ khởi tạo những gì có trong FXML
         lblCountdown.setText("0s");
         lblWord.setText("Chờ đối thủ...");
-        lblTotalRounds.setText("Tổng Vòng: 0");
-        lblMemorizeTime.setText("Thời gian nhớ: 0s");
-
+        lblGameStatus.setText("Đang kết nối...");
+        
+        // ĐỪNG gọi setText cho lblPlayerScore, lblCurrentRound, v.v. ở đây
         setUIState(GameState.WAITING);
     }
 
@@ -80,14 +84,24 @@ public class ChallengeGameController {
         this.networkClient = networkClient;
     }
 
-    public void setupGameInfo(GameSession session) {
-        int totalRounds = session.getTotalRounds();
-        long memorizeTime = session.getDisplayTimes();
-        
+    // ChallengeGameController.java
+    public void setupGameInfo(Map<String, Object> gameInfo) {
+        String opponentUsername = (String) gameInfo.get("opponentUsername");
+        int totalRounds = (int) gameInfo.get("totalRounds");
+        long thinkTime = (long) gameInfo.get("thinkTime");
+
         Platform.runLater(() -> {
             lblTotalRounds.setText("Tổng Vòng: " + totalRounds);
-            lblMemorizeTime.setText("Thời gian nhớ: " + memorizeTime + "s");
+            lblMemorizeTime.setText("Thời gian nhớ: " + thinkTime + "s");
+            lblPlayerScore.setText("0");
+            lblOpponentScore.setText("0");
+            lblCurrentRound.setText("01");
+            lblGameStatus.setText("Đang kết nối với " + opponentUsername + "...");
+            lblWord.setText("Chờ bắt đầu...");
         });
+
+        this.opponentUsername = opponentUsername;
+        System.out.println("VÀO GAME: vs " + opponentUsername);
     }
 
     @FXML
@@ -128,11 +142,13 @@ public class ChallengeGameController {
 
     /*Server báo hiệu round mới */
     public void onNewRound(String word, int round, int memorizeTime) {
-        lblWord.setText(word);
-        lblCurrentRound.setText(String.format("%02d", round));
-        lblGameStatus.setText("GHI NHỚ!");
-        setUIState(GameState.MEMORIZING);
-        startTimer(memorizeTime); // Bắt đầu đếm ngược thời gian nhớ
+        Platform.runLater(() -> {
+            lblWord.setText(word);
+            lblCurrentRound.setText(String.format("%02d", round));
+            lblGameStatus.setText("GHI NHỚ!");
+            setUIState(GameState.MEMORIZING);
+            startTimer(memorizeTime);
+        });
     }
 
     /*Server báo hiệu đến lúc trả lời */

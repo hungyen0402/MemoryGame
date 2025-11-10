@@ -61,7 +61,7 @@ public class MainMenuController {
         sceneManager.showLoginScene();
     }
 
-    public void updateOnlineCount(Integer count_players) {
+    public void updateOnlineCount(int count_players) {
         Platform.runLater(() -> {
             lblOnlineCount.setText(String.valueOf(count_players));
         });

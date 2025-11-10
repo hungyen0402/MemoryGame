@@ -158,7 +158,7 @@ public class ClientHandler implements Runnable {
                 server.handleStartPractice(this.player, settings);
                 break; 
             }
-            case "C_SUBMIT_ANSWER" -> {
+            case "SUBMIT_ANSWER" -> {
                 String answer = (String) message.getPayload();
                 GameSession session = server.getSessionForPlayer(this.player);
                 if (session != null) {
@@ -172,6 +172,15 @@ public class ClientHandler implements Runnable {
                 System.out.println("Nhan duoc C_LEAVE_GAME tu " + player.getUsername()); 
                 server.handleLeaveGame(this.player);
                 break; 
+            }
+            case "C_ACCEPT_INVITE" -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> data = (Map<String, Object>) message.getPayload();
+                server.handleAcceptInvite(this.player, data);
+            }
+            case "C_DECLINE_INVITE" -> {
+                String inviterUsername = (String) message.getPayload();
+                server.handleDeclineInvite(this.player, inviterUsername);
             }
         }
     }

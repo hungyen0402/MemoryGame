@@ -3,9 +3,7 @@ package com.memorygame.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,7 +81,7 @@ public class Server {
                 // (cái này là việc của ClienHandler)
                 // client.sendMessage(new Message("LOGIN_SUCCESS", player)); 
                 // Thông báo tới các user khác
-                broadcastOnlineList(); 
+                broadcastOnlineCount(); 
 
                 return true; 
             }
@@ -113,51 +111,112 @@ public class Server {
         return success; 
     }
 
+    private Map<Player, Map<String, Object>> pendingInvites = new ConcurrentHashMap<>();
+
     public synchronized boolean handleInvite(Player inviter, Map<String, Object> invitePayload) {
-        String opponentUsername = (String) invitePayload.get("opponentUsername"); 
-        if (opponentUsername == null) {
-            System.err.println("LOI INVITE: Payload khong co opponentUsername"); 
-            return false;
-        }
-        // Tìm clienthandler của đối thủ
-        ClientHandler opponentHandler = onlinePlayers.get("opponentUsername");
-        // Lấy Opponent Player object 
+        String opponentUsername = (String) invitePayload.get("opponentUsername");
+        ClientHandler opponentHandler = onlinePlayers.get(opponentUsername);
         Player opponent = (opponentHandler != null) ? handlerToPlayer.get(opponentHandler) : null;
-        // Tìm clientHandler của người mời 
-        ClientHandler inviterHandler = onlinePlayers.get(inviter.getUsername()); 
-        if (opponentHandler != null && opponent != null && opponent.getStatus() == PlayerStatus.ONLINE) {
-            Map<String, Object> opponentPayload = new HashMap<>(invitePayload);
-            opponentPayload.put("inviteUsername", inviter.getUsername()); 
-            opponentPayload.remove("opponentUsername"); 
-            // Gửi lời mời tới đối thủ
-            opponentHandler.sendMessage(new Message("S_RECEIVE_INVITE", opponentPayload));
-            // Báo cho người mời là đã gửi thành công
+        ClientHandler inviterHandler = onlinePlayers.get(inviter.getUsername());
+
+        if (opponent == null || opponentHandler == null || opponent.getStatus() != PlayerStatus.ONLINE) {
             if (inviterHandler != null) {
-                inviterHandler.sendMessage(new Message("S_INVITE_SEND", "Đã gửi lời mời. Đang chờ đối thủ...."));
-                return true; 
-            }
-        } else {
-            if (inviterHandler != null) {
-                String reason = (opponent == null) ? "Người chơi không tồn tại hoặc đã offline." : "Người chơi đang bận."; 
-                System.out.println("Nguoi choi khong ton tai hoac da offline");
-                inviterHandler.sendMessage(new Message("S_INVITE_FAIL", reason));
+                inviterHandler.sendMessage(new Message("S_INVITE_FAIL", "Đối thủ không online hoặc đang bận."));
             }
             return false;
         }
-        return true; 
+
+        // Lưu lời mời tạm
+        pendingInvites.put(opponent, invitePayload);
+
+        // Gửi popup cho người nhận
+        Map<String, Object> receivePayload = new HashMap<>(invitePayload);
+        receivePayload.put("inviterUsername", inviter.getUsername());
+        receivePayload.put("inviterWins", inviter.getTotalWins());
+        receivePayload.remove("opponentUsername");
+
+        opponentHandler.sendMessage(new Message("S_RECEIVE_INVITE", receivePayload));
+
+        // Báo cho người gửi
+        if (inviterHandler != null) {
+            inviterHandler.sendMessage(new Message("S_INVITE_SEND", "Đã gửi lời mời đến " + opponentUsername + "..."));
+        }
+        return true;
+    }
+
+    // Xử lý khi người nhận ĐỒNG Ý
+    // Server.java
+    public synchronized void handleAcceptInvite(Player acceptor, Map<String, Object> inviteData) {
+        String inviterUsername = (String) inviteData.get("inviterUsername");
+        
+        // Tìm người mời
+        ClientHandler inviterHandler = onlinePlayers.get(inviterUsername);
+        Player inviter = (inviterHandler != null) ? handlerToPlayer.get(inviterHandler) : null;
+
+        if (inviter == null) {
+            // Người mời đã thoát
+            acceptor.setStatus(PlayerStatus.ONLINE);
+            playerDAO.updatePlayerStatus(acceptor.getId(), PlayerStatus.ONLINE);
+            sendMessageToPlayer(acceptor, new Message("S_INVITE_FAIL", "Người mời đã thoát."));
+            return;
+        }
+
+        // XÓA lời mời pending
+        pendingInvites.remove(acceptor);
+
+        // ✅ CẬP NHẬT TRẠNG THÁI CẢ 2 NGƯỜI
+        inviter.setStatus(PlayerStatus.BUSY);
+        acceptor.setStatus(PlayerStatus.BUSY);
+        playerDAO.updatePlayerStatus(inviter.getId(), PlayerStatus.BUSY);
+        playerDAO.updatePlayerStatus(acceptor.getId(), PlayerStatus.BUSY);
+
+        // ✅ TẠO GAME SESSION
+        GameSession session = new GameSession(inviter, acceptor, inviteData, this, false);
+        playerToSession.put(inviter, session);
+        playerToSession.put(acceptor, session);
+
+        // ✅ GỬI S_CHALLENGE_START CHO CẢ 2 NGƯỜI
+        Map<String, Object> gameInfoForInviter = new HashMap<>(inviteData);
+        gameInfoForInviter.put("opponentUsername", acceptor.getUsername());
+        sendMessageToPlayer(inviter, new Message("S_CHALLENGE_START", gameInfoForInviter));
+
+        Map<String, Object> gameInfoForAcceptor = new HashMap<>(inviteData);
+        gameInfoForAcceptor.put("opponentUsername", inviter.getUsername());
+        sendMessageToPlayer(acceptor, new Message("S_CHALLENGE_START", gameInfoForAcceptor));
+
+        System.out.println("✅ TRẬN ĐẤU BẮT ĐẦU: " + inviter.getUsername() + " vs " + acceptor.getUsername());
+
+        // Cập nhật lobby cho người khác
+        broadcastOnlineCount();
+    }
+    // Xử lý khi người nhận TỪ CHỐI
+    public synchronized void handleDeclineInvite(Player decliner, String inviterUsername) {
+        Player inviter = handlerToPlayer.values().stream()
+                .filter(p -> p.getUsername().equals(inviterUsername))
+                .findFirst().orElse(null);
+
+        pendingInvites.remove(decliner);
+
+        if (inviter != null) {
+            ClientHandler handler = onlinePlayers.get(inviter.getUsername());
+            if (handler != null) {
+                handler.sendMessage(new Message("S_INVITE_DECLINED", decliner.getUsername() + " đã từ chối lời mời."));
+            }
+        }
     }
 
     public void createGameSession(Player player1, Player player2) {
         
     }
     // Gửi message 
-    public void broadcastOnlineList() {
+    public void broadcastOnlineCount() {
         System.out.println("Dang cap nhap va gui danh sach online ...."); 
 
-        List<Player> onlinePlayerList = new ArrayList<>(handlerToPlayer.values());
-        Message message = new Message("S_ONLINE_LIST", onlinePlayerList); 
+        int count = playerDAO.countPlayerOnline();
+        Message countMessage = new Message("S_ONLINE_COUNT", count);
+
         for (ClientHandler handler : handlerToPlayer.keySet()) {
-            handler.sendMessage(message);
+            handler.sendMessage(countMessage);
         }
     }
 // --- CÁC HÀM MỚI CHO LOGIC GAME ---
@@ -173,7 +232,7 @@ public class Server {
         playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.BUSY);
         
         // Tạo game session mới
-        GameSession newSession = new GameSession(player, null, settings, this);
+        GameSession newSession = new GameSession(player,null, settings, this, true);
         playerToSession.put(player, newSession);
         
         System.out.println(player.getUsername() + " bat dau luyen tap.");
@@ -182,12 +241,8 @@ public class Server {
         newSession.start();
         
         // Cập nhật sảnh chờ cho người khác
-        broadcastOnlineList();
+        broadcastOnlineCount();
     }
-
-    /**
-     * Người chơi chủ động rời game (luyện tập hoặc thách đấu)
-     */
     public synchronized void handleLeaveGame(Player player) {
         if (player == null) return;
         
@@ -212,7 +267,7 @@ public class Server {
         playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.ONLINE);
         
         // Cập nhật sảnh chờ
-        broadcastOnlineList();
+        broadcastOnlineCount();
     }
 
     /**
@@ -233,7 +288,12 @@ public class Server {
             playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.OFFLINE);;
             onlinePlayers.remove(player.getUsername());
             handlerToPlayer.remove(client);
-            broadcastOnlineList();
+            broadcastOnlineCount();
+
+            Message removeMessage = new Message("S_PLAYER_LOGGED_OUT", player);
+            for (ClientHandler handler : handlerToPlayer.keySet()) {
+                handler.sendMessage(removeMessage);
+            }
         }
         else{
             System.out.println("Client chua dang nhap da ngat ket noi, chi dong socket.");

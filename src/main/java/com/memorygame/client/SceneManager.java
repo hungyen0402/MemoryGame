@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.memorygame.client.controller.ChallengeConfigController;
 import com.memorygame.client.controller.ChallengeGameController;
+import com.memorygame.client.controller.ChallengeInviteDialogController;
 import com.memorygame.client.controller.LeaderboardController;
 import com.memorygame.client.controller.LobbyController;
 import com.memorygame.client.controller.LoginController;
@@ -16,6 +17,7 @@ import com.memorygame.client.controller.RegisterController;
 import com.memorygame.common.Message;
 import com.memorygame.common.Player;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -36,7 +38,13 @@ public class SceneManager implements NetworkClient.MessageListener {
         // SceneManager sẽ nhận và xử lý TẤT CẢ tin nhắn từ server gửi sang
         this.networkClient.setMessageListener(this);
     }
-
+    public void showChallengeConfigScene(Player opponent) {
+        ChallengeConfigController controller = (ChallengeConfigController) loadAndShowScene("/fxml/ChallengeConfigScene.fxml");
+        
+        if (controller != null) {
+            controller.setupController(this, networkClient, opponent);
+        }
+    }
     private Object loadAndShowScene(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
@@ -101,11 +109,25 @@ public class SceneManager implements NetworkClient.MessageListener {
         loadAndShowScene("/fxml/PracticeSettingsScene.fxml");
     }
 
-    public void showChallengeConfigScene(Player opponent) {
-        ChallengeConfigController controller = (ChallengeConfigController) loadAndShowScene("/fxml/ChallengeConfigScene.fxml");
-        
-        if (controller != null) {
-            controller.setupController(this, networkClient, opponent);
+    public void showChallengeGameScene(Map<String, Object> gameInfo) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChallengeGameScene.fxml"));
+            Parent root = loader.load();
+            ChallengeGameController controller = loader.getController();
+
+            this.currentController = controller;
+            controller.setupController(this, networkClient);
+            controller.setupGameInfo(gameInfo);
+
+            Scene scene = new Scene(root, 1300, 800);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("MindFlow Arena - Thách Đấu");
+            primaryStage.centerOnScreen();
+            primaryStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể tải giao diện trận đấu!");
         }
     }
 
@@ -116,10 +138,8 @@ public class SceneManager implements NetworkClient.MessageListener {
         }
     }
     
-    public void showChallengeGameScene() {
-        loadAndShowScene("/fxml/ChallengeGameScene.fxml");
-    }
-    
+
+
     public void showRegisterScene() {
         loadAndShowScene("/fxml/RegisterScene.fxml"); 
     }
@@ -127,8 +147,16 @@ public class SceneManager implements NetworkClient.MessageListener {
     public void onMessageReceived(Message msg) {
         String type = msg.getType();
         Object payload = msg.getPayload();
-
-        if (currentController instanceof LoginController c) {
+        if (type.equals("S_RECEIVE_INVITE")) {
+            // Chỉ hiện nếu KHÔNG đang trong trận
+            if (!(currentController instanceof ChallengeGameController)) {
+                showInviteDialog((Map<String, Object>) payload);
+            }
+            return; // Dừng xử lý tiếp
+        }else if (type.equals("S_CHALLENGE_START")) {
+            showChallengeGameScene((Map<String, Object>) payload);
+            return;
+        }else if (currentController instanceof LoginController c) {
             switch (type) {
                 case "S_LOGIN_RESPONSE" -> {
                     Object[] response = (Object[]) payload;
@@ -147,7 +175,7 @@ public class SceneManager implements NetworkClient.MessageListener {
         
         else if (currentController instanceof MainMenuController c) {
             if (type.equals("S_ONLINE_COUNT")) {
-                c.updateOnlineCount((int) payload); // phải sửa lại 
+                c.updateOnlineCount((int) payload);
             }
         }
         
@@ -156,12 +184,16 @@ public class SceneManager implements NetworkClient.MessageListener {
                 c.updateOnlineList((List<Player>) payload);
             }
             else if (type.equals("S_INVITE_SEND")) {
-                // payload là một String thông báo thành công
                 c.showInviteStatusAlert("Đã Gửi Lời Mời", (String) payload, AlertType.INFORMATION);
             }
             else if (type.equals("S_INVITE_FAIL")) {
-                // payload là một String lý do thất bại
                 c.showInviteStatusAlert("Gửi Lời Mời Thất Bại", (String) payload, AlertType.ERROR);
+            }
+            // THÊM DÒNG NÀY:
+            else if (type.equals("S_RECEIVE_INVITE")) {
+                showInviteDialog((Map<String, Object>) payload);
+            } else if (type.equals("S_PLAYER_LOGGED_OUT")) {
+                c.removePlayerFromList((Player) payload);
             }
         }
         
@@ -222,6 +254,36 @@ public class SceneManager implements NetworkClient.MessageListener {
                     c.onGameOver((int) payload);
                 }
             }
+        }else if (type.equals("S_RECEIVE_INVITE")) {
+            showInviteDialog((Map<String, Object>) payload);
+        }
+        else if (type.equals("S_INVITE_DECLINED")) {
+            if (currentController instanceof LobbyController c) {
+                c.showInviteStatusAlert("Từ chối", (String) payload, AlertType.WARNING);
+            }
         }
     }
+    // Thêm method
+    public void showInviteDialog(Map<String, Object> inviteData) {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChallengeInviteDialog.fxml"));
+                Parent root = loader.load();
+                ChallengeInviteDialogController controller = loader.getController();
+
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Lời mời thách đấu");
+                dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+                dialogStage.setResizable(false);
+                dialogStage.setScene(new Scene(root));
+
+                controller.setup(this, networkClient, inviteData, dialogStage);
+                dialogStage.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    
 }

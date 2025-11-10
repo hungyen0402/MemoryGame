@@ -45,21 +45,24 @@ public class GameSession implements Serializable {
     /**
      * Constructor cho Game Luyện tập
      */
-    public GameSession(Player player1, Player player2, Map<String, Object> settings, Server server) {
+    // GameSession.java – Thêm constructor cho 2 người
+    public GameSession(Player player1, Player player2, Map<String, Object> settings, Server server, boolean isPractice) {
         this.player1 = player1;
         this.player2 = player2;
-        this.isPractice = true;
-        
-        // Lấy cài đặt từ settings map (với giá trị mặc định)
-        this.displayTimes = (long) settings.getOrDefault("thinkTime", 3L);
-        this.totalRounds = (int) settings.getOrDefault("totalRounds", 5);
-        this.waitTimes = (long) settings.getOrDefault("waitTime", 10L);
-        
+        this.isPractice = isPractice;
+
+        this.displayTimes = (long) settings.get("thinkTime");
+        this.totalRounds = (int) settings.get("totalRounds");
+        this.waitTimes = (long) settings.get("waitTime");
+
         this.server = server;
         this.vocabularyDAO = server.getVocabularyDAO();
-        
+
         this.scores = new HashMap<>();
         this.scores.put(player1, 0);
+        if (player2 != null) {
+            this.scores.put(player2, 0);
+        }
         this.usedWords = new HashSet<>();
         this.gameTimer = new Timer();
     }
@@ -124,6 +127,7 @@ public class GameSession implements Serializable {
         
         // 1. Báo cho client biết để bật ô nhập liệu
         // Payload: Integer answerTime
+        System.out.println("PLAYER TRA LOI CAU HOI"); 
         server.sendMessageToPlayer(player1, new Message("S_ANSWER_PHASE", (int) waitTimes));
 
         // 2. Hẹn giờ "hết giờ trả lời"
@@ -151,6 +155,8 @@ public class GameSession implements Serializable {
         // Tính điểm
         if (answer != null && currentWord != null && answer.equalsIgnoreCase(currentWord.getPhrase())) {
             // Trả lời đúng
+            // Thêm player2 cho chế độ Challenge
+            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
             int currentScore = scores.get(player1);
             int newScore = currentScore + 10; // (Bạn có thể tính điểm phức tạp hơn)
             scores.put(player1, newScore);
@@ -160,6 +166,7 @@ public class GameSession implements Serializable {
         } else {
             // Trả lời sai
             // Không gửi gì cả, hoặc gửi điểm cũ
+            System.out.println("DA CHAM DIEM, KET QUA SAI"); 
              server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", scores.get(player1)));
         }
 

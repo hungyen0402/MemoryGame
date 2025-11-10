@@ -117,6 +117,25 @@ public class LobbyController {
         });
     }
 
+    public void removePlayerFromList(Player playerToRemove) {
+    if (playerToRemove == null) return;
+    
+    Platform.runLater(() -> {
+        Player found = null;
+        for (Player p : playerList) {
+            if (p.getId() == playerToRemove.getId()) {
+                found = p;
+                break;
+            }
+        }
+        
+        if (found != null) {
+            playerList.remove(found);
+        }
+        
+    });
+}
+
     private void applyFilter() {
         String keyword = txtSearch.getText();
         final String lowerCaseKeyword = (keyword == null) ? "" : keyword.toLowerCase();
