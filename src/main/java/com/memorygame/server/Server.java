@@ -252,7 +252,7 @@ public class Server {
             if (session.isPractice()) {
                 session.leaveGame(); // Sẽ tự gọi removePracticeSession
             } else {
-                // TODO: Xử lý rời game thách đấu (báo cho người kia)
+                session.handleOpponentLeave(player);
             }
         }
     }

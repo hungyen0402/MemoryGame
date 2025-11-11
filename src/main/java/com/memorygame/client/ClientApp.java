@@ -15,6 +15,7 @@ public class ClientApp extends Application {
             this.networkClient = NetworkClient.getInstance();
             this.sceneManager = new SceneManager(primaryStage, networkClient);
  
+            primaryStage.centerOnScreen();
             sceneManager.showLoginScene();
 
             primaryStage.setOnCloseRequest(event -> {

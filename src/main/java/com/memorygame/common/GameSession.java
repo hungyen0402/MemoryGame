@@ -29,7 +29,7 @@ public class GameSession implements Serializable {
     private transient Server server;
     private transient VocabularyDAO vocabularyDAO;
 
-    private enum RoundState { WAITING_FOR_ANSWER, WAITING_FOR_NEXT_ROUND }
+    private enum RoundState { WAITING_FOR_ANSWER, WAITING_FOR_NEXT_ROUND, ENDED }
     private RoundState roundState;
 
     // ✅ THÊM: Lưu câu trả lời của 2 người chơi
@@ -295,6 +295,33 @@ public class GameSession implements Serializable {
             System.out.println(player1.getUsername() + " da roi game thach dau.");
         }
     }
+
+    // Trong GameSession.java (Challenge mode)
+    public synchronized void handleOpponentLeave(Player leaver) {
+        // Dừng bộ hẹn giờ ngay lập tức
+        gameTimer.cancel(); 
+        this.roundState = RoundState.ENDED;
+        
+        // Xác định người còn lại (người chiến thắng do bỏ cuộc)
+        Player winner = (leaver.equals(player1)) ? player2 : player1;
+        Player loser = leaver;
+
+        // Thông báo cho người thắng cuộc
+        Map<String, Object> winData = new HashMap<>();
+        winData.put("winnerUsername", winner.getUsername());
+        // Điểm của người thắng là điểm hiện tại, người thua là 0
+        winData.put("yourScore", scores.getOrDefault(winner, 0));
+        winData.put("opponentUsername", loser.getUsername());
+        winData.put("opponentScore", 0); 
+        
+        server.sendMessageToPlayer(winner, new Message("S_CHALLENGE_END", winData));
+        
+        // Cập nhật PlayerDAO để lưu kết quả (người thắng được +1 win)
+
+        server.removeChallengeSession(player1, player2);
+
+        System.out.println("Challenge ket thuc do doi thu " + loser.getUsername() + " da roi tran.");
+    }   
 
     private void scheduleNextRound(long delayMs) {
          gameTimer.schedule(new TimerTask() {

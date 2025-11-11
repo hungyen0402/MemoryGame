@@ -234,4 +234,10 @@ public class ChallengeGameController {
         
         gameTimer.playFromStart();
     }
+
+    public void stopGameTimer() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+    }
 }

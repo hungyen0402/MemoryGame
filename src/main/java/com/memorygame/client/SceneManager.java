@@ -78,7 +78,6 @@ public class SceneManager implements NetworkClient.MessageListener {
             primaryStage.setScene(scene);
             primaryStage.setResizable(false); 
             primaryStage.setTitle("MindFlow Arena");
-            primaryStage.centerOnScreen();
             primaryStage.show();
 
             return this.currentController;
@@ -109,7 +108,6 @@ public class SceneManager implements NetworkClient.MessageListener {
             Scene scene = new Scene(root, 1000, 700);
             primaryStage.setScene(scene);
             primaryStage.setTitle("MindFlow Arena - Kết Quả");
-            primaryStage.centerOnScreen();
             primaryStage.show();
 
         } catch (IOException e) {
@@ -150,7 +148,6 @@ public class SceneManager implements NetworkClient.MessageListener {
             Scene scene = new Scene(root, 1300, 800);
             primaryStage.setScene(scene);
             primaryStage.setTitle("MindFlow Arena - Thách Đấu");
-            primaryStage.centerOnScreen();
             primaryStage.show();
 
         } catch (IOException e) {
@@ -249,6 +246,7 @@ public class SceneManager implements NetworkClient.MessageListener {
                     c.onScoreUpdate((int) data[0], (int) data[1]);
                 }
                 case "S_CHALLENGE_END" -> {
+                    c.stopGameTimer();
                     showChallengeResultScene((Map<String, Object>) payload);
                     System.out.println("KET THUC GAMESESSION");
                     return;
