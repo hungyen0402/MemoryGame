@@ -7,6 +7,7 @@ import java.util.Map;
 import com.memorygame.client.controller.ChallengeConfigController;
 import com.memorygame.client.controller.ChallengeGameController;
 import com.memorygame.client.controller.ChallengeInviteDialogController;
+import com.memorygame.client.controller.ChallengeResultController;
 import com.memorygame.client.controller.LeaderboardController;
 import com.memorygame.client.controller.LobbyController;
 import com.memorygame.client.controller.LoginController;
@@ -88,7 +89,34 @@ public class SceneManager implements NetworkClient.MessageListener {
             return null;
         }
     }
+    public void showChallengeResultScene(Map<String, Object> resultData) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ChallengeResultScene.fxml"));
+            Parent root = loader.load();
+            ChallengeResultController controller = loader.getController();
 
+            this.currentController = controller;
+            controller.setupController(this, networkClient);
+            
+            // Truyền dữ liệu kết quả
+            String winnerUsername = (String) resultData.get("winnerUsername");
+            int yourScore = (int) resultData.get("yourScore");
+            String opponentUsername = (String) resultData.get("opponentUsername");
+            int opponentScore = (int) resultData.get("opponentScore");
+            
+            controller.showResult(winnerUsername, yourScore, opponentUsername, opponentScore);
+
+            Scene scene = new Scene(root, 1000, 700);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("MindFlow Arena - Kết Quả");
+            primaryStage.centerOnScreen();
+            primaryStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Không thể tải giao diện kết quả!");
+        }
+    }
     public void showLoginScene() {
         loadAndShowScene("/fxml/LoginScene.fxml");
     }
@@ -267,6 +295,10 @@ public class SceneManager implements NetworkClient.MessageListener {
                     // Payload: Integer finalScore
                     c.onGameOver((int) payload);
                 }
+                case "S_CHALLENGE_END" -> {
+                    showChallengeResultScene((Map<String, Object>) payload);
+                    return;
+                }
             }
         }else if (type.equals("S_RECEIVE_INVITE")) {
             showInviteDialog((Map<String, Object>) payload);
@@ -299,5 +331,6 @@ public class SceneManager implements NetworkClient.MessageListener {
         });
     }
 
+    
     
 }

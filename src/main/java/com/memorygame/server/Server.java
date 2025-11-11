@@ -301,6 +301,21 @@ public class Server {
             handlerToPlayer.remove(client);
         }
     }
+    public synchronized void removeChallengeSession(Player player1, Player player2) {
+        playerToSession.remove(player1);
+        playerToSession.remove(player2);
+        
+        // Cập nhật trạng thái người chơi về ONLINE
+        player1.setStatus(PlayerStatus.ONLINE);
+        player2.setStatus(PlayerStatus.ONLINE);
+        playerDAO.updatePlayerStatus(player1.getId(), PlayerStatus.ONLINE);
+        playerDAO.updatePlayerStatus(player2.getId(), PlayerStatus.ONLINE);
+        
+        // Cập nhật sảnh chờ
+        broadcastOnlineCount();
+        
+        System.out.println("Đã dọn dẹp session thách đấu: " + player1.getUsername() + " vs " + player2.getUsername());
+    }
     // Get playerDAO
     public PlayerDAO getPlayerDAO() {
         return this.playerDAO; 
