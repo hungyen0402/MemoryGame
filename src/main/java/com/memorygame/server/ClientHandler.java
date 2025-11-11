@@ -27,7 +27,7 @@ public class ClientHandler implements Runnable {
 
     public ClientHandler(Socket socket) {
         this.socket = socket; 
-        this.player = null; // player là null cho đến khi đăng nhập 
+        this.player = null;
         try {
             this.oos = new ObjectOutputStream(socket.getOutputStream()); 
             this.ois = new ObjectInputStream(socket.getInputStream()); 
@@ -35,7 +35,7 @@ public class ClientHandler implements Runnable {
             e.printStackTrace(); 
         }
     }
-    // nhận message rồi gọi hàm processMessage để xử lý message (listerner function)
+
     @Override
     public void run() {
         try {
@@ -67,23 +67,21 @@ public class ClientHandler implements Runnable {
             e.printStackTrace(); 
         }
     }
-    // Hàm này dùng khi user đăng nhập thành công, 
-    //Server sẽ gọi hàm này để gán player cho Clienthandler
+
     public void setPlayer(Player player) {
         this.player = player; 
     }
-    // HÀM XỬ LÝ CÁC MESSAGE NHẬN ĐƯỢC 
+
     public void processMessage(Message message) {
         String type = message.getType(); 
-    // Chỉ xử lý nếu đã đăng nhập (ngoại trừ C_LOGIN và C_REGISTER)
+        
         if (this.player == null && !type.equals("C_LOGIN") && !type.equals("C_REGISTER")) {
              System.err.println("Nhan duoc message " + type + " tu client chua dang nhap.");
              return;
         }
+        
         switch (type) {
             case "C_LOGIN" -> {
-                // Lúc này là user đang đăng nhập,
-                // Client gửi 1 mảng String[] {username, password}
                 try {
                     String[] credentials = (String[]) message.getPayload();
                     String username = credentials[0];
@@ -95,9 +93,10 @@ public class ClientHandler implements Runnable {
                     Message message1 = new Message("S_LOGIN_RESPONSE", loginResponse);
                     sendMessage(message1); 
                 } catch (Exception e) {
-                    sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập (dữ liệu từ user gửi)")); 
+                    sendMessage(new Message("LOGIN_FAIL", "Lỗi dữ liệu đăng nhập")); 
                 }
             }
+            
             case "C_LOGOUT" -> {
                 try {
                     socket.close();
@@ -105,35 +104,39 @@ public class ClientHandler implements Runnable {
                     e.printStackTrace();
                 }
             }
+            
             case "INVITE" -> {
                 if (this.player != null) {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> invitePayload = (Map<String, Object>) message.getPayload(); 
-                    // Chuyển yêu cầu mời cho server
                     boolean success_invite = server.handleInvite(this.player, invitePayload); 
                     if (success_invite) {
-                        System.out.println(this.player.getUsername() + " GUI LOI MOI THACH DAU THANH CONG TOI " + invitePayload.get("opponentUsername"));
+                        System.out.println(this.player.getUsername() + " GUI LOI MOI THANH CONG");
                     } else {
-                        System.out.println(this.player.getUsername() + " GUI LOI MOI THACH DAU KHONG THANH CONG TOI " + invitePayload.get("opponentUsername"));
+                        System.out.println(this.player.getUsername() + " GUI LOI MOI THAT BAI");
                     }
                 }
                 break; 
             }
+            
             case "C_SQL_PLAYER" -> {
                 List<Player> onlinePlayers = playerDAO.getOnlinePlayersForLobby(this.player.getId());
                 Message message2 = new Message("S_ONLINE_LIST", onlinePlayers); 
                 sendMessage(message2);
             }
+            
             case "C_ONLINE_COUNT" -> {
                 int count = playerDAO.countPlayerOnline(); 
                 Message message3 = new Message("S_ONLINE_COUNT", count); 
                 sendMessage(message3); 
             }
+            
             case "C_GET_LEADERBOARD" -> {
                 List<Player> leaderboard = playerDAO.getLeaderBoard();
                 Message message4 = new Message("S_LEADERBOARD_DATA", leaderboard);
                 sendMessage(message4);
             }
+            
             case "C_REGISTER" -> {
                 try {
                     String[] credentials = (String[]) message.getPayload(); 
@@ -148,9 +151,10 @@ public class ClientHandler implements Runnable {
                         sendMessage(new Message("S_REGISTER_FAIL", "Tên người dùng đã tồn tại.")); 
                     }
                 } catch (Exception e) {
-                    sendMessage(new Message("S_REGISTER_FAIL", "Lỗi dữ liệu đăng ký không hợp lệ")); 
+                    sendMessage(new Message("S_REGISTER_FAIL", "Lỗi dữ liệu đăng ký")); 
                 }
             }
+            
             case "C_START_PRACTICE" -> {
                 System.out.println("Nhan duoc C_START_PRACTICE tu " + this.player.getUsername()); 
                 @SuppressWarnings("unchecked")
@@ -158,42 +162,41 @@ public class ClientHandler implements Runnable {
                 server.handleStartPractice(this.player, settings);
                 break; 
             }
-            case "SUBMIT_ANSWER" -> {
+            
+            // ✅ SỬA: Xử lý Submit Answer
+            case "C_SUBMIT_ANSWER" -> {
                 String answer = (String) message.getPayload();
                 GameSession session = server.getSessionForPlayer(this.player);
+                
                 if (session != null) {
-                    session.submitAnswer(answer);
+                    if (session.isPractice()) {
+                        // Practice: 1 người chơi
+                        session.submitAnswer(answer);
+                    } else {
+                        // Challenge: 2 người chơi
+                        session.submitAnswerChallenge(this.player, answer);
+                    }
                 } else {
-                    System.err.println("Nhan duoc SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
+                    System.err.println("Nhan duoc C_SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
                 }
                 break; 
             }
+            
             case "C_LEAVE_GAME" -> {
                 System.out.println("Nhan duoc C_LEAVE_GAME tu " + player.getUsername()); 
                 server.handleLeaveGame(this.player);
                 break; 
             }
+            
             case "C_ACCEPT_INVITE" -> {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> data = (Map<String, Object>) message.getPayload();
                 server.handleAcceptInvite(this.player, data);
             }
+            
             case "C_DECLINE_INVITE" -> {
                 String inviterUsername = (String) message.getPayload();
                 server.handleDeclineInvite(this.player, inviterUsername);
-            }
-            case "C_SUBMIT_ANSWER" -> {
-                String answer = (String) message.getPayload();
-                GameSession session = server.getSessionForPlayer(this.player);
-                if (session != null) {
-                    session.submitAnswer(answer);
-                } else {
-                    System.err.println("Nhan duoc SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");
-                }
-                break; 
-            }
-            case "C_SUBMIT_ANSWER_CHALLENGE" -> {
-                String answer = (String) message.getPayload();
             }
         }
     }

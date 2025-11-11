@@ -16,9 +16,6 @@ import com.memorygame.server.VocabularyDAO;
  * Nó quản lý trạng thái, vòng chơi, tính điểm và hẹn giờ cho một game.
  */
 public class GameSession implements Serializable {
-    
-    // (Bỏ qua serialVersionUID nếu không cần)
-
     // Cài đặt game
     private final Player player1; // Người chơi (cho chế độ luyện tập)
     private final Player player2; // Sẽ là null nếu là luyện tập
@@ -35,8 +32,12 @@ public class GameSession implements Serializable {
     private Timer gameTimer;        // Bộ hẹn giờ cho các vòng
     
     // Tham chiếu đến các thành phần của Server
-    private transient Server server; // Dùng 'transient' vì Server không cần Serializable
+    private transient Server server; 
     private transient VocabularyDAO vocabularyDAO;
+
+    // Sửa COMMIT 7
+    private Map<Player, String> playerAnswers; 
+    private Set<Player> submittedPlayers; 
 
     // Trạng thái của vòng chơi
     private enum RoundState { WAITING_FOR_ANSWER, WAITING_FOR_NEXT_ROUND }
@@ -65,16 +66,13 @@ public class GameSession implements Serializable {
         }
         this.usedWords = new HashSet<>();
         this.gameTimer = new Timer();
+
+        // Sửa COMMIT 7
+        this.playerAnswers = new HashMap<>();
+        this.submittedPlayers = new HashSet<>();  
     }
 
-    // TODO: Bổ sung Constructor cho game Thách đấu (2 người chơi) sau
-
-    /**
-     * Bắt đầu phiên chơi game (được gọi bởi Server.java)
-     */
     public void start() {
-        // 1. Gửi tin nhắn cho client biết game đã bắt đầu (để client chuyển scene)
-        // Gửi lại cài đặt để client hiển thị
         Map<String, Object> settings = new HashMap<>();
         settings.put("thinkTime", displayTimes);
         settings.put("totalRounds", totalRounds);
@@ -91,17 +89,16 @@ public class GameSession implements Serializable {
         scheduleNextRound(1000);
     }
 
-    /**
-     * Chuẩn bị và bắt đầu vòng chơi mới
-     */
     private void nextRound() {
         currentRound++;
         if (currentRound > totalRounds) {
             endGame();
             return;
         }
+        // Sửa COMMIT 7 
+        playerAnswers.clear();
+        submittedPlayers.clear();
 
-        // 1. Lấy từ vựng mới
         currentWord = vocabularyDAO.getRandomPhrase(usedWords);
         if (currentWord == null) {
             System.err.println("HET TU VUNG! Ket thuc game som.");
@@ -152,9 +149,7 @@ public class GameSession implements Serializable {
         }, waitTimes * 1000);
     }
 
-    /**
-     * Xử lý khi người chơi gửi câu trả lời (được gọi từ ClientHandler)
-     */
+    // Sửa COMMIT 7. Tính điểm cho 1 player - chế độ Practice 
     public synchronized void submitAnswer(String answer) {
         // Chỉ xử lý nếu đang ở trạng thái chờ trả lời
         if (this.roundState != RoundState.WAITING_FOR_ANSWER) {
@@ -167,137 +162,132 @@ public class GameSession implements Serializable {
 
         // Tính điểm
         if (answer != null && currentWord != null && answer.equalsIgnoreCase(currentWord.getPhrase())) {
-            // Trả lời đúng
-            // Thêm player2 cho chế độ Challenge
             System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
             int currentScore = scores.get(player1);
-            int newScore = currentScore + 10; // (Bạn có thể tính điểm phức tạp hơn)
+            int newScore = currentScore + 10;
             scores.put(player1, newScore);
-            
-            // Gửi điểm mới cho client
-            server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", newScore));
+            server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_PRACTICE", newScore));
         } else {
-            // Trả lời sai
-            // Không gửi gì cả, hoặc gửi điểm cũ
             System.out.println("DA CHAM DIEM, KET QUA SAI"); 
-             server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", scores.get(player1)));
+            server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_PRACTICE", scores.get(player1)));
         }
 
         // Chờ 2 giây rồi bắt đầu vòng mới
         scheduleNextRound(2000);
     }
-
-    public synchronized void submitAnswerChallenge(String answer1, String answer2) {
-        // Chỉ xử lý nếu đang ở trạng thái chờ trả lời
+    // Sửa COMMIT 7 
+    public synchronized void submitAnswerChallenge(Player player, String answer) {
         if (this.roundState != RoundState.WAITING_FOR_ANSWER) {
+            System.out.println("[WARN] " + player.getUsername() + " gui answer khong phai luc.");
             return; 
         }
-        
-        this.roundState = RoundState.WAITING_FOR_NEXT_ROUND;
-        gameTimer.cancel(); // Hủy tất cả các hẹn giờ (quan trọng là hủy cái timesUp())
-        gameTimer = new Timer(); // Tạo lại timer mới cho vòng sau
-        Map<String, Object> score = new HashMap<>();
 
-        // Tính điểm
+        // Kiểm tra người này đã gửi chưa
+        if (submittedPlayers.contains(player)) {
+            System.out.println("[WARN] " + player.getUsername() + " da gui answer roi!");
+            return;
+        }
+
+        // Lưu câu trả lời
+        playerAnswers.put(player, answer);
+        submittedPlayers.add(player);
+        
+        System.out.println(player.getUsername() + " da gui answer: " + answer);
+
+        // CHỈ CHẤM ĐIỂM KHI CẢ 2 ĐÃ GỬI
+        if (submittedPlayers.size() == 2) {
+            gameTimer.cancel(); // Dừng timer hết giờ
+            gameTimer = new Timer();
+            
+            processAnswers();
+        }
+    }
+
+    // COMMIT 7
+    private void processAnswers() {
+        this.roundState = RoundState.WAITING_FOR_NEXT_ROUND;
+
+        String answer1 = playerAnswers.getOrDefault(player1, "");
+        String answer2 = playerAnswers.getOrDefault(player2, "");
+
+        // Chấm điểm cho Player 1
         if (answer1 != null && currentWord != null && answer1.equalsIgnoreCase(currentWord.getPhrase())) {
-            // Trả lời đúng
-            // Thêm player2 cho chế độ Challenge
-            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
-            int currentScore = scores.get(player1);
-            int newScore = currentScore + 10; // (Bạn có thể tính điểm phức tạp hơn)
+            int newScore = scores.get(player1) + 10;
             scores.put(player1, newScore);
-            
-            // Gửi điểm mới cho client
-            // server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", newScore));
+            System.out.println("Player1 TRA LOI DUNG: " + newScore);
         } else {
-            // Trả lời sai
-            // Không gửi gì cả, hoặc gửi điểm cũ
-            System.out.println("DA CHAM DIEM, KET QUA SAI"); 
-            // server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE", scores.get(player1)));
+            System.out.println("Player1 TRA LOI SAI");
         }
+
+        // Chấm điểm cho Player 2
         if (answer2 != null && currentWord != null && answer2.equalsIgnoreCase(currentWord.getPhrase())) {
-            // Trả lời đúng
-            // Thêm player2 cho chế độ Challenge
-            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
-            int currentScore = scores.get(player2);
-            int newScore = currentScore + 10; // (Bạn có thể tính điểm phức tạp hơn)
+            int newScore = scores.get(player2) + 10;
             scores.put(player2, newScore);
-            
-            // Gửi điểm mới cho client
-            // server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE", newScore));
+            System.out.println("Player2 TRA LOI DUNG: " + newScore);
         } else {
-            // Trả lời sai
-            // Không gửi gì cả, hoặc gửi điểm cũ
-            System.out.println("DA CHAM DIEM, KET QUA SAI"); 
-            // server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE", scores.get(player2)));
+            System.out.println("Player2 TRA LOI SAI");
         }
-        score.put("score1", scores.get(player1)); 
-        score.put("score2", scores.get(player2)); 
-        System.out.println("DIEM ROUND THU " + currentRound + " LA: " + (int) score.get("score1"));
-        System.out.println("DIEM ROUND THU " + currentRound + " LA: " + (int) score.get("score2"));
-        server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", score)); 
-        server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", score));
-        // Chờ 2 giây rồi bắt đầu vòng mới
+
+        // Gửi điểm cho cả 2
+        Object[] scoreData = {scores.get(player1), scores.get(player2)};
+        server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", scoreData));
+        server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", scoreData));
+
+        System.out.println("DIEM ROUND " + currentRound + ": " + scores.get(player1) + " - " + scores.get(player2));
+
         scheduleNextRound(2000);
     }
 
-    /**
-     * Xử lý khi hết giờ trả lời
-     */
     private synchronized void timesUp() {
         if (this.roundState != RoundState.WAITING_FOR_ANSWER) {
             return;
         }
         
-        System.out.println("Nguoi choi " + player1.getUsername() + " da het gio tra loi.");
-        this.roundState = RoundState.WAITING_FOR_NEXT_ROUND;
-        // gameTimer đã tự hủy khi chạy xong task này, ta tạo lại timer
+        System.out.println("HET GIO TRA LOI - SO NGUOI DA GUI: " + submittedPlayers.size());
+
         gameTimer = new Timer(); 
         
-        // Không cộng điểm
         if (isPractice) {
+            this.roundState = RoundState.WAITING_FOR_NEXT_ROUND;
             server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_PRACTICE", scores.get(player1)));
+            scheduleNextRound(2000);
         } else {
-            Map<String, Object> score = new HashMap<>();
-            score.put("score1", scores.get(player1)); 
-            score.put("score2", scores.get(player2)); 
-            server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", score));
-            server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", score));
+            // CHẤM ĐIỂM NGAY CẢ KHI CHỈ 1 HOẶC 0 NGƯỜI GỬI
+            processAnswers();
         }
-        
-        
-        // Chờ 2 giây rồi bắt đầu vòng mới
-        scheduleNextRound(2000);
     }
 
-    /**
-     * Kết thúc game
-     */
     private void endGame() {
-        gameTimer.cancel(); // Hủy mọi hẹn giờ
-        int finalScore = scores.get(player1);
-
-        // Gửi tin nhắn kết thúc game
-        server.sendMessageToPlayer(player1, new Message("S_GAME_OVER", finalScore));
+        gameTimer.cancel();
         
-        // Báo cho Server dọn dẹp session này
-        server.removePracticeSession(player1);
-        System.out.println("Game luyen tap cho " + player1.getUsername() + " da ket thuc.");
+        if (isPractice) {
+            int finalScore = scores.get(player1);
+            server.sendMessageToPlayer(player1, new Message("S_GAME_OVER", finalScore));
+            server.removePracticeSession(player1);
+            System.out.println("Game luyen tap cho " + player1.getUsername() + " da ket thuc.");
+        } else {
+            // TODO: Xử lý kết thúc Challenge
+            int score1 = scores.get(player1);
+            int score2 = scores.get(player2);
+            
+            String winnerUsername = null;
+            if (score1 > score2) {
+                winnerUsername = player1.getUsername();
+            } else if (score2 > score1) {
+                winnerUsername = player2.getUsername();
+            }
+            
+            System.out.println("KẾT THÚC CHALLENGE: " + player1.getUsername() + "(" + score1 + ") vs " + player2.getUsername() + "(" + score2 + ")");
+        }
     }
 
-    /**
-     * Người chơi chủ động rời game
-     */
+    // user chủ động rời game 
     public void leaveGame() {
         gameTimer.cancel();
-        // Báo cho Server dọn dẹp
         server.removePracticeSession(player1);
         System.out.println(player1.getUsername() + " da roi game luyen tap.");
     }
     
-    /**
-     * Hẹn giờ cho vòng tiếp theo (tránh lỗi Timer)
-     */
     private void scheduleNextRound(long delayMs) {
          gameTimer.schedule(new TimerTask() {
             @Override
@@ -307,8 +297,6 @@ public class GameSession implements Serializable {
         }, delayMs);
     }
 
-
-    // --- Các Getter (nếu cần) ---
     public Player getPlayer1() { return player1; }
     public Player getPlayer2() { return player2; }
     public boolean isPractice() { return isPractice; }
@@ -316,7 +304,10 @@ public class GameSession implements Serializable {
 
     public Player getWinner() {
         if (isPractice) return null;
-        // (Bổ sung logic 2 người chơi sau)
+        int score1 = scores.get(player1);
+        int score2 = scores.get(player2);
+        if (score1 > score2) return player1;
+        if (score2 > score1) return player2;
         return null;
     }
 }
