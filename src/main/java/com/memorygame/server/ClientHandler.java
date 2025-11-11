@@ -192,6 +192,9 @@ public class ClientHandler implements Runnable {
                 }
                 break; 
             }
+            case "C_SUBMIT_ANSWER_CHALLENGE" -> {
+                String answer = (String) message.getPayload();
+            }
         }
     }
 }
