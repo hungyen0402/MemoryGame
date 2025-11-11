@@ -102,8 +102,9 @@ public class SceneManager implements NetworkClient.MessageListener {
             int yourScore = (int) resultData.get("yourScore");
             String opponentUsername = (String) resultData.get("opponentUsername");
             int opponentScore = (int) resultData.get("opponentScore");
+            Player opponent = (Player) resultData.get("opponentPlayer");
             
-            controller.showResult(winnerUsername, yourScore, opponentUsername, opponentScore);
+            controller.showResult(winnerUsername, yourScore, opponent, opponentScore);
 
             Scene scene = new Scene(root, 1000, 700);
             primaryStage.setScene(scene);
@@ -145,7 +146,7 @@ public class SceneManager implements NetworkClient.MessageListener {
             controller.setupController(this, networkClient);
             controller.setupGameInfo(gameInfo);
 
-            Scene scene = new Scene(root, 1300, 800);
+            Scene scene = new Scene(root, 1000, 700);
             primaryStage.setScene(scene);
             primaryStage.setTitle("MindFlow Arena - Thách Đấu");
             primaryStage.show();

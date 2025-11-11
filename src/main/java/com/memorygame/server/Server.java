@@ -250,7 +250,7 @@ public class Server {
         GameSession session = playerToSession.get(player);
         if (session != null) {
             if (session.isPractice()) {
-                session.leaveGame(); // Sẽ tự gọi removePracticeSession
+                session.leavePractice();
             } else {
                 session.handleOpponentLeave(player);
             }
@@ -286,6 +286,14 @@ public class Server {
         Player player = handlerToPlayer.get(client);
         if (player != null) {
             System.out.println("logout: " + player.getUsername());
+            GameSession session = playerToSession.get(player);
+            if (session != null) {
+                if (session.isPractice()) {
+                    session.leavePractice();
+                } else {
+                    session.handleOpponentForfeit(player);
+                }
+            } 
             playerDAO.updatePlayerStatus(player.getId(), PlayerStatus.OFFLINE);;
             onlinePlayers.remove(player.getUsername());
             handlerToPlayer.remove(client);

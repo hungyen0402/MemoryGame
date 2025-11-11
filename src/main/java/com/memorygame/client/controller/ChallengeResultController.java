@@ -3,6 +3,7 @@ package com.memorygame.client.controller;
 import com.memorygame.client.ClientState;
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
+import com.memorygame.common.Player;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ public class ChallengeResultController {
     private SceneManager sceneManager;
     private NetworkClient networkClient;
     private String opponentUsername;
+    private Player opponent;
 
     @FXML
     public void initialize() {
@@ -40,9 +42,10 @@ public class ChallengeResultController {
      * @param opponentUsername - username đối thủ
      * @param opponentScore - điểm đối thủ
      */
-    public void showResult(String winnerUsername, int yourScore, String opponentUsername, int opponentScore) {
+    public void showResult(String winnerUsername, int yourScore, Player opponent, int opponentScore) {
         Platform.runLater(() -> {
-            this.opponentUsername = opponentUsername;
+            this.opponent = opponent;
+            this.opponentUsername = opponent.getUsername();
             
             String myUsername = ClientState.getInstance().getCurrentUsername();
             
@@ -73,12 +76,11 @@ public class ChallengeResultController {
 
     @FXML
     private void handleRematch() {
-        // Tìm Player đối thủ (cần có trong danh sách online)
-        // Sau đó chuyển đến màn hình cài đặt thách đấu
-        
-        // TODO: Cần lấy đối tượng Player đầy đủ, không chỉ username
-        // Tạm thời chuyển về Lobby để chọn lại
-        sceneManager.showLobbyScene();
+        if (this.opponent != null) {
+            sceneManager.showChallengeConfigScene(this.opponent);
+        } else {
+            sceneManager.showLobbyScene();
+        }
     }
 
     @FXML

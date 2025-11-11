@@ -1,5 +1,6 @@
 package com.memorygame.client.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.memorygame.client.ClientState;
@@ -85,7 +86,10 @@ public class ChallengeGameController {
         }
 
         String answer = txtAnswer.getText().trim();
-        networkClient.sendMessage(new Message("C_SUBMIT_ANSWER", answer));
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("answer", answer);
+        payload.put("remainingTime", this.remainingTime);
+        networkClient.sendMessage(new Message("C_SUBMIT_ANSWER", payload));
 
         // ✅ CHUYỂN SANG TRẠNG THÁI WAITING (Đã gửi, chờ đối thủ)
         setUIState(GameState.WAITING);

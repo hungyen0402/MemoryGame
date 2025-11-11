@@ -50,8 +50,8 @@
                 <!-- Đối thủ -->
                 <VBox alignment="CENTER" spacing="12" 
                       style="-fx-background-color: #ffffff; -fx-padding: 30 50; -fx-pref-width: 300; -fx-background-radius: 20; -fx-border-color: #f59e0b; -fx-border-width: 2; -fx-border-radius: 20; -fx-effect: dropshadow(gaussian, rgba(245,158,11,0.25), 20, 0, 0, 8);">
-                    <Label fx:id="lblOpponentName"
-                    style="-fx-font-size: 18px; -fx-font-weight: 600; -fx-text-fill: #1f2937;" 
+                    <Label fx:id="lblOpponentName" 
+                           style="-fx-font-size: 18px; -fx-font-weight: 600; -fx-text-fill: #1f2937;" 
                            text="👤 Đối Thủ" />
                     <Label fx:id="lblOpponentScore" 
                            style="-fx-font-size: 56px; -fx-font-weight: 900; -fx-text-fill: #f59e0b;" 

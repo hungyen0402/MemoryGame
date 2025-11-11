@@ -165,16 +165,16 @@ public class ClientHandler implements Runnable {
             
             // ✅ SỬA: Xử lý Submit Answer
             case "C_SUBMIT_ANSWER" -> {
-                String answer = (String) message.getPayload();
+                Map<String, Object> answerPayload = (Map<String, Object>) message.getPayload();
                 GameSession session = server.getSessionForPlayer(this.player);
                 
                 if (session != null) {
                     if (session.isPractice()) {
                         // Practice: 1 người chơi
-                        session.submitAnswer(answer);
+                        session.submitAnswer(answerPayload);
                     } else {
                         // Challenge: 2 người chơi
-                        session.submitAnswerChallenge(this.player, answer);
+                        session.submitAnswerChallenge(this.player, answerPayload);
                     }
                 } else {
                     System.err.println("Nhan duoc C_SUBMIT_ANSWER tu " + player.getUsername() + " nhung khong tim thay session!");

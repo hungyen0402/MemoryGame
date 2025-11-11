@@ -33,7 +33,7 @@ public class GameSession implements Serializable {
     private RoundState roundState;
 
     // ✅ THÊM: Lưu câu trả lời của 2 người chơi
-    private Map<Player, String> playerAnswers;
+    private Map<Player, Map<String, Object>> playerAnswerDetails;
     private Set<Player> submittedPlayers;
 
     public GameSession(Player player1, Player player2, Map<String, Object> settings, Server server, boolean isPractice) {
@@ -57,7 +57,7 @@ public class GameSession implements Serializable {
         this.gameTimer = new Timer();
 
         // ✅ KHỞI TẠO cho Challenge
-        this.playerAnswers = new HashMap<>();
+        this.playerAnswerDetails = new HashMap<>();
         this.submittedPlayers = new HashSet<>();
     }
 
@@ -88,7 +88,7 @@ public class GameSession implements Serializable {
         }
 
         // ✅ RESET trạng thái cho round mới
-        playerAnswers.clear();
+        playerAnswerDetails.clear();
         submittedPlayers.clear();
 
         currentWord = vocabularyDAO.getRandomPhrase(usedWords);
@@ -137,7 +137,7 @@ public class GameSession implements Serializable {
     }
 
     // ✅ SỬA: Submit Answer cho Practice (1 người)
-    public synchronized void submitAnswer(String answer) {
+    public synchronized void submitAnswer(Map<String, Object> payload) {
         if (this.roundState != RoundState.WAITING_FOR_ANSWER) {
             return; 
         }
@@ -146,11 +146,16 @@ public class GameSession implements Serializable {
         gameTimer.cancel();
         gameTimer = new Timer();
 
+        String answer = (String) payload.getOrDefault("answer", "");
+        Integer remainingTime = (Integer) payload.getOrDefault("remainingTime", 0);
+
         if (answer != null && currentWord != null && answer.equalsIgnoreCase(currentWord.getPhrase())) {
-            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
+            int wordLength = currentWord.getLength();
+            int roundScore = remainingTime * wordLength;
             int currentScore = scores.get(player1);
-            int newScore = currentScore + 10;
+            int newScore = currentScore + roundScore;
             scores.put(player1, newScore);
+            System.out.println("DA CHAM DIEM, KET QUA DUNG"); 
             server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_PRACTICE", newScore));
         } else {
             System.out.println("DA CHAM DIEM, KET QUA SAI"); 
@@ -161,7 +166,10 @@ public class GameSession implements Serializable {
     }
 
     // ✅ MỚI: Submit Answer cho Challenge (2 người)
-    public synchronized void submitAnswerChallenge(Player player, String answer) {
+    public synchronized void submitAnswerChallenge(Player player, Map<String, Object> payload) {
+        String answer = (String) payload.get("answer");
+        Integer remainingTime = (Integer) payload.get("remainingTime");
+
         if (this.roundState != RoundState.WAITING_FOR_ANSWER) {
             System.out.println("[WARN] " + player.getUsername() + " gửi answer khi không phải lúc.");
             return; 
@@ -174,7 +182,10 @@ public class GameSession implements Serializable {
         }
 
         // Lưu câu trả lời
-        playerAnswers.put(player, answer);
+        Map<String, Object> details = new HashMap<>();
+        details.put("answer", answer);
+        details.put("remainingTime", remainingTime != null ? remainingTime : 0);
+        playerAnswerDetails.put(player, details);
         submittedPlayers.add(player);
         
         System.out.println(player.getUsername() + " đã gửi answer: " + answer);
@@ -192,12 +203,21 @@ public class GameSession implements Serializable {
     private void processAnswers() {
         this.roundState = RoundState.WAITING_FOR_NEXT_ROUND;
 
-        String answer1 = playerAnswers.getOrDefault(player1, "");
-        String answer2 = playerAnswers.getOrDefault(player2, "");
+        Map<String, Object> details1 = playerAnswerDetails.getOrDefault(player1, new HashMap<>());
+        Map<String, Object> details2 = playerAnswerDetails.getOrDefault(player2, new HashMap<>());
+
+        String answer1 = (String) details1.getOrDefault("answer", "");
+        int time1 = (Integer) details1.getOrDefault("remainingTime", 0);
+    
+        String answer2 = (String) details2.getOrDefault("answer", "");
+        int time2 = (Integer) details2.getOrDefault("remainingTime", 0);
+
+        int wordLength = currentWord.getLength();
 
         // Chấm điểm cho Player 1
         if (answer1 != null && currentWord != null && answer1.equalsIgnoreCase(currentWord.getPhrase())) {
-            int newScore = scores.get(player1) + 10;
+            int roundScore = time1 * wordLength; 
+            int newScore = scores.get(player1) + roundScore;
             scores.put(player1, newScore);
             System.out.println("Player1 TRẢ LỜI ĐÚNG: " + newScore);
         } else {
@@ -206,7 +226,8 @@ public class GameSession implements Serializable {
 
         // Chấm điểm cho Player 2
         if (answer2 != null && currentWord != null && answer2.equalsIgnoreCase(currentWord.getPhrase())) {
-            int newScore = scores.get(player2) + 10;
+            int roundScore = time2 * wordLength;
+            int newScore = scores.get(player2) + roundScore;
             scores.put(player2, newScore);
             System.out.println("Player2 TRẢ LỜI ĐÚNG: " + newScore);
         } else {
@@ -242,8 +263,9 @@ public class GameSession implements Serializable {
         }
     }
 
+    // Được gọi khi hết round hoặc hết từ vựng
     private void endGame() {
-        gameTimer.cancel();
+        if (gameTimer != null) gameTimer.cancel();
         
         if (isPractice) {
             int finalScore = scores.get(player1);
@@ -251,76 +273,91 @@ public class GameSession implements Serializable {
             server.removePracticeSession(player1);
             System.out.println("Game luyen tap cho " + player1.getUsername() + " da ket thuc.");
         } else {
-            // ✅ Xử lý kết thúc Challenge
-            int score1 = scores.get(player1);
-            int score2 = scores.get(player2);
-            
-            String winnerUsername = null;
-            if (score1 > score2) {
-                winnerUsername = player1.getUsername();
-            } else if (score2 > score1) {
-                winnerUsername = player2.getUsername();
+            String winnerUsername = getWinner() != null ? getWinner().getUsername() : null;
+            endChallengeSession(winnerUsername); // Gửi kết quả và dọn dẹp
+        }
+    }
+
+    // Mất kết nối đột ngột
+    public synchronized void handleOpponentForfeit(Player leaver) {
+        if (isPractice) return; // Chỉ xử lý Challenge
+
+        if (gameTimer != null) gameTimer.cancel();
+        this.roundState = RoundState.ENDED;
+        
+        // Gán 0 điểm cho người rời trận (Forfeit)
+        scores.put(leaver, 0); 
+
+        // Xác định người còn lại
+        Player winner = (leaver.equals(player1)) ? player2 : player1;
+        // Nếu điểm bằng 0 thì tăng lên 1
+        scores.computeIfPresent(winner, (player, currentScore) -> {
+            if (currentScore == 0) {
+                return 1;
             }
-            
-            System.out.println("KẾT THÚC CHALLENGE: " + player1.getUsername() + "(" + score1 + ") vs " + player2.getUsername() + "(" + score2 + ")");
-            
-            // ✅ Gửi kết quả cho Player 1
-            Map<String, Object> resultForP1 = new HashMap<>();
-            resultForP1.put("winnerUsername", winnerUsername);
-            resultForP1.put("yourScore", score1);
-            resultForP1.put("opponentUsername", player2.getUsername());
-            resultForP1.put("opponentScore", score2);
-            server.sendMessageToPlayer(player1, new Message("S_CHALLENGE_END", resultForP1));
-            
-            // ✅ Gửi kết quả cho Player 2
-            Map<String, Object> resultForP2 = new HashMap<>();
-            resultForP2.put("winnerUsername", winnerUsername);
-            resultForP2.put("yourScore", score2);
-            resultForP2.put("opponentUsername", player1.getUsername());
-            resultForP2.put("opponentScore", score1);
-            server.sendMessageToPlayer(player2, new Message("S_CHALLENGE_END", resultForP2));
-            
-            // ✅ Dọn dẹp session
-            server.removeChallengeSession(player1, player2);
-        }
+            return currentScore;
+        });
+        String winnerUsername = winner.getUsername();
+
+        // Gửi kết quả và dọn dẹp
+        endChallengeSession(winnerUsername);
     }
 
-    public void leaveGame() {
-        gameTimer.cancel();
-        if (isPractice) {
-            server.removePracticeSession(player1);
-            System.out.println(player1.getUsername() + " da roi game luyen tap.");
-        } else {
-            server.removeChallengeSession(player1, player2);
-            System.out.println(player1.getUsername() + " da roi game thach dau.");
-        }
+    // Gửi kết quả và dọn dẹp
+    private void endChallengeSession(String winnerUsername) {
+        Player p1 = player1;
+        Player p2 = player2;
+        int score1 = scores.get(p1);
+        int score2 = scores.get(p2);
+        
+        System.out.println("KẾT THÚC CHALLENGE: " + p1.getUsername() + "(" + score1 + ") vs " + p2.getUsername() + "(" + score2 + ")");
+        
+        // Gửi kết quả cho Player 1
+        Map<String, Object> resultForP1 = new HashMap<>();
+        resultForP1.put("winnerUsername", winnerUsername);
+        resultForP1.put("yourScore", score1);
+        resultForP1.put("opponentScore", score2);
+        resultForP1.put("opponentPlayer", p2);
+        server.sendMessageToPlayer(p1, new Message("S_CHALLENGE_END", resultForP1));
+        
+        // Gửi kết quả cho Player 2
+        Map<String, Object> resultForP2 = new HashMap<>();
+        resultForP2.put("winnerUsername", winnerUsername);
+        resultForP2.put("yourScore", score2);
+        resultForP2.put("opponentScore", score1);
+        resultForP2.put("opponentPlayer", p1);
+        server.sendMessageToPlayer(p2, new Message("S_CHALLENGE_END", resultForP2));
+
+        // Ghi lịch sử và dọn dẹp
+        server.getPlayerDAO().saveMatchResult(this); 
+        server.removeChallengeSession(p1, p2);
     }
 
-    // Trong GameSession.java (Challenge mode)
+    // Thoát trận luyện tập
+    public void leavePractice() {
+        if (gameTimer != null) gameTimer.cancel();
+        server.removePracticeSession(player1);
+        System.out.println(player1.getUsername() + " da roi game luyen tap.");
+    }
+
+    // Đối phương chủ động bấm thoát trận thách đấu
     public synchronized void handleOpponentLeave(Player leaver) {
-        // Dừng bộ hẹn giờ ngay lập tức
         gameTimer.cancel(); 
         this.roundState = RoundState.ENDED;
         
-        // Xác định người còn lại (người chiến thắng do bỏ cuộc)
+        // Xác định người còn lại
         Player winner = (leaver.equals(player1)) ? player2 : player1;
-        Player loser = leaver;
+        // Nếu điểm bằng 0 thì tăng lên 1
+        scores.computeIfPresent(winner, (player, currentScore) -> {
+            if (currentScore == 0) {
+                return 1;
+            }
+            return currentScore;
+        });
+        String winnerUsername = winner.getUsername();
 
-        // Thông báo cho người thắng cuộc
-        Map<String, Object> winData = new HashMap<>();
-        winData.put("winnerUsername", winner.getUsername());
-        // Điểm của người thắng là điểm hiện tại, người thua là 0
-        winData.put("yourScore", scores.getOrDefault(winner, 0));
-        winData.put("opponentUsername", loser.getUsername());
-        winData.put("opponentScore", 0); 
-        
-        server.sendMessageToPlayer(winner, new Message("S_CHALLENGE_END", winData));
-        
-        // Cập nhật PlayerDAO để lưu kết quả (người thắng được +1 win)
-
-        server.removeChallengeSession(player1, player2);
-
-        System.out.println("Challenge ket thuc do doi thu " + loser.getUsername() + " da roi tran.");
+        // Gửi kết quả và dọn dẹp
+        endChallengeSession(winnerUsername);
     }   
 
     private void scheduleNextRound(long delayMs) {

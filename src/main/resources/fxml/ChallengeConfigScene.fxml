@@ -16,10 +16,12 @@
     <center>
         <VBox alignment="CENTER" spacing="30" style="-fx-padding: 50 20;">
 
-            <Label style="-fx-font-size: 32px; 
-                -fx-font-weight: 800; 
-                -fx-text-fill: #1f2937;" text="🧠 Cài Đặt Thách Đấu" />
-                   
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="⚙" style="-fx-font-size: 34px; -fx-text-fill: #1f2937;" />
+                <Label text="Cài Đặt Thách Đấu"
+                    style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #1f2937;" />
+            </HBox>
+ 
             <VBox alignment="CENTER_LEFT" maxWidth="450" spacing="30" 
                 style="-fx-background-color: #ffffff; 
                 -fx-border-color: #e5e7eb; -fx-border-width: 1;                            

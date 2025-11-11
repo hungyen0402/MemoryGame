@@ -1,5 +1,8 @@
 package com.memorygame.client.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.memorygame.client.NetworkClient;
 import com.memorygame.client.SceneManager;
 import com.memorygame.common.Message;
@@ -27,9 +30,6 @@ public class PracticeGameController {
 
     @FXML
     private Label lblWord; // Vocabulary 
-
-    @FXML
-    private Label lblHint;
 
     @FXML
     private TextField txtAnswer;
@@ -62,7 +62,6 @@ public class PracticeGameController {
         lblPoints.setText("0");
         lblTimer.setText("0s");
         lblWord.setText("Đang tải...");
-        lblHint.setText("Chào mừng đến với luyện tập!");
         // (Kiểm tra xem bạn đã thêm 2 ID này vào FXML chưa)
         if (lblTotalRounds != null) lblTotalRounds.setText("Tổng Vòng: 0");
         if (lblMemorizeTime != null) lblMemorizeTime.setText("Thời gian nhớ: 0s");
@@ -82,7 +81,6 @@ public class PracticeGameController {
             if (lblMemorizeTime != null) {
                 lblMemorizeTime.setText("Thời gian nhớ: " + memorizeTime + "s");
             }
-            lblHint.setText("Game bắt đầu!");
         });
     }
 
@@ -90,7 +88,6 @@ public class PracticeGameController {
         Platform.runLater(() -> {
             lblWord.setText(word);
             lblRound.setText(String.format("%02d", round));
-            lblHint.setText("Ghi nhớ!");
             setUIState(GameState.MEMORIZING);
             startTimer(memorizeTime); // Bắt đầu đếm ngược (chỉ để hiển thị)
         });
@@ -99,7 +96,6 @@ public class PracticeGameController {
     public void onAnswerPhase(int answerTime) {
         Platform.runLater(() -> {
             lblWord.setText("???");
-            lblHint.setText("Trả lời!");
             setUIState(GameState.ANSWERING);
             startTimer(answerTime); // Bắt đầu đếm ngược
         });
@@ -108,7 +104,6 @@ public class PracticeGameController {
     public void onScoreUpdate(int newScore) {
         Platform.runLater(() -> {
             lblPoints.setText(String.valueOf(newScore));
-            lblHint.setText("Chờ vòng tiếp theo...");
             setUIState(GameState.WAITING);
         });
     }
@@ -118,7 +113,6 @@ public class PracticeGameController {
             if (gameTimer != null) gameTimer.stop();
             setUIState(GameState.ENDED);
             lblWord.setText("Kết thúc!");
-            lblHint.setText("Hoàn thành luyện tập!");
 
             // Hiển thị Alert thông báo
             Alert alert = new Alert(Alert.AlertType.INFORMATION, 
@@ -138,15 +132,24 @@ public class PracticeGameController {
         if (gameTimer != null) gameTimer.stop();
 
         String answer = txtAnswer.getText().trim();
-        networkClient.sendMessage(new Message("C_SUBMIT_ANSWER", answer));
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("answer", answer);
+        payload.put("remainingTime", this.remainingTime);
+        networkClient.sendMessage(new Message("C_SUBMIT_ANSWER", payload));
 
         setUIState(GameState.WAITING);
-        lblHint.setText("Đã gửi, đang chờ chấm điểm...");
         txtAnswer.clear();
     }
 
     @FXML
     private void endPractice() {
+        if (gameTimer != null) gameTimer.stop();
+        networkClient.sendMessage(new Message("C_LEAVE_GAME", null));
+        sceneManager.showMainMenuScene();
+    }
+
+    @FXML
+    private void backToMenu() {
         if (gameTimer != null) gameTimer.stop();
         networkClient.sendMessage(new Message("C_LEAVE_GAME", null));
         sceneManager.showMainMenuScene();
@@ -183,12 +186,6 @@ public class PracticeGameController {
         });
         
         gameTimer.getKeyFrames().add(frame);
-        
-        gameTimer.setOnFinished(event -> {
-            if (currentState == GameState.ANSWERING) {
-                lblHint.setText("Hết giờ!");
-            }
-        });
         
         gameTimer.playFromStart();
     }
