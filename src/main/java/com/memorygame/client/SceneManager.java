@@ -248,6 +248,11 @@ public class SceneManager implements NetworkClient.MessageListener {
                     Object[] data = (Object[]) payload;
                     c.onScoreUpdate((int) data[0], (int) data[1]);
                 }
+                case "S_CHALLENGE_END" -> {
+                    showChallengeResultScene((Map<String, Object>) payload);
+                    System.out.println("KET THUC GAMESESSION");
+                    return;
+                }
             }
         }
         
@@ -295,10 +300,10 @@ public class SceneManager implements NetworkClient.MessageListener {
                     // Payload: Integer finalScore
                     c.onGameOver((int) payload);
                 }
-                case "S_CHALLENGE_END" -> {
-                    showChallengeResultScene((Map<String, Object>) payload);
-                    return;
-                }
+                // case "S_CHALLENGE_END" -> {
+                //     showChallengeResultScene((Map<String, Object>) payload);
+                //     return;
+                // }
             }
         }else if (type.equals("S_RECEIVE_INVITE")) {
             showInviteDialog((Map<String, Object>) payload);
