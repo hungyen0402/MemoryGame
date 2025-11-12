@@ -235,9 +235,11 @@ public class GameSession implements Serializable {
         }
 
         // Gửi điểm cho cả 2
-        Object[] scoreData = {scores.get(player1), scores.get(player2)};
-        server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", scoreData));
-        server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", scoreData));
+        Object[] scoreDataP1 = {scores.get(player1), scores.get(player2)};
+        server.sendMessageToPlayer(player1, new Message("S_SCORE_UPDATE_CHALLENGE", scoreDataP1));
+
+        Object[] scoreDataP2 = {scores.get(player2), scores.get(player1)};
+        server.sendMessageToPlayer(player2, new Message("S_SCORE_UPDATE_CHALLENGE", scoreDataP2));
 
         System.out.println("ĐIỂM ROUND " + currentRound + ": " + scores.get(player1) + " - " + scores.get(player2));
 
