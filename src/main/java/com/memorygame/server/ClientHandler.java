@@ -130,6 +130,12 @@ public class ClientHandler implements Runnable {
                 Message message3 = new Message("S_ONLINE_COUNT", count); 
                 sendMessage(message3); 
             }
+
+            case "C_WIN_COUNT" -> {
+                Player player = playerDAO.getPlayerByUsername(this.player.getUsername());
+                Message message5 = new Message("S_WIN_COUNT", player);
+                sendMessage(message5);
+            }
             
             case "C_GET_LEADERBOARD" -> {
                 List<Player> leaderboard = playerDAO.getLeaderBoard();

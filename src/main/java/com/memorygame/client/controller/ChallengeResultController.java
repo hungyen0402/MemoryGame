@@ -51,7 +51,7 @@ public class ChallengeResultController {
             
             // Cập nhật điểm số
             lblYourScore.setText(String.valueOf(yourScore));
-            lblOpponentName.setText("👤 " + opponentUsername + ":");
+            lblOpponentName.setText(opponentUsername);
             lblOpponentScore.setText(String.valueOf(opponentScore));
 
             // Xác định kết quả (Thắng/Thua/Hòa)

@@ -30,6 +30,8 @@ public class ChallengeGameController {
     @FXML private Label lblCurrentRound;
     @FXML private Label lblTotalRounds;
     @FXML private Label lblMemorizeTime;
+    @FXML private Label lblPlayerName;
+    @FXML private Label lblOpponentName;
 
     private SceneManager sceneManager;
     private NetworkClient networkClient;
@@ -63,16 +65,25 @@ public class ChallengeGameController {
         int totalRounds = (int) gameInfo.get("totalRounds");
         long thinkTime = (long) gameInfo.get("thinkTime");
 
+        // LẤY TÊN NGƯỜI CHƠI HIỆN TẠI
+        String playerUsername = ClientState.getInstance().getCurrentUsername();
+
         Platform.runLater(() -> {
             lblTotalRounds.setText("Tổng Vòng: " + totalRounds);
             lblMemorizeTime.setText("Thời gian nhớ: " + thinkTime + "s");
+            
+            // CẬP NHẬT TÊN
+            lblPlayerName.setText(playerUsername);
+            lblOpponentName.setText(opponentUsername);
+
+            // Reset điểm
             lblPlayerScore.setText("0");
             lblOpponentScore.setText("0");
             lblCurrentRound.setText("01");
         });
 
         this.opponentUsername = opponentUsername;
-        System.out.println("VÀO GAME: vs " + opponentUsername);
+        System.out.println("VÀO GAME: " + playerUsername + " vs " + opponentUsername);
     }
 
     @FXML

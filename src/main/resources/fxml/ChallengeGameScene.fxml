@@ -34,7 +34,7 @@
                       style="-fx-background-color: #fef2f2; -fx-background-radius: 10; -fx-padding: 5 12;">
                     <Label fx:id="lblMemorizeTime"
                            style="-fx-font-size: 13px; -fx-text-fill: #ef4444; -fx-font-weight: 600;"
-                           text="Tạm dừng: 5s" />
+                           text="Thời gian nhớ: 5s" />
                 </HBox>
             </HBox>
 
@@ -50,19 +50,29 @@
             
             <!-- Khối điểm -->
             <HBox alignment="CENTER" spacing="40">
+                <!-- Người chơi (Bạn) -->
                 <VBox alignment="CENTER" spacing="6"
                       style="-fx-background-color: #ffffff; -fx-padding: 20 25; -fx-pref-width: 220; -fx-background-radius: 15; -fx-border-color: #10b981; -fx-border-width: 2; -fx-border-radius: 15;">
-                    <Label style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #1f2937;"
-                           text="Người Chơi Bạn" />
+                    
+                    <!-- TÊN NGƯỜI CHƠI -->
+                    <Label fx:id="lblPlayerName"
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #10b981;"
+                           text="Bạn" />
+                    
                     <Label fx:id="lblPlayerScore"
                            style="-fx-font-size: 34px; -fx-font-weight: 900; -fx-text-fill: #10b981;"
                            text="0" />
                 </VBox>
 
+                <!-- Đối thủ -->
                 <VBox alignment="CENTER" spacing="6"
                       style="-fx-background-color: #ffffff; -fx-padding: 20 25; -fx-pref-width: 220; -fx-background-radius: 15; -fx-border-color: #f59e0b; -fx-border-width: 1; -fx-border-radius: 15;">
-                    <Label style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #1f2937;"
+                    
+                    <!-- TÊN ĐỐI THỦ -->
+                    <Label fx:id="lblOpponentName"
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #f59e0b;"
                            text="Đối Thủ" />
+                    
                     <Label fx:id="lblOpponentScore"
                            style="-fx-font-size: 34px; -fx-font-weight: 900; -fx-text-fill: #f59e0b;"
                            text="0" />
@@ -98,7 +108,8 @@
             <StackPane alignment="CENTER"
                        style="-fx-background-color: #e0f2fe; -fx-padding: 50; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 30, 0.1, 0, 10); -fx-pref-width: 600; -fx-min-height: 180;">
                 <Label fx:id="lblWord"
-                       style="-fx-font-size: 56px; -fx-font-weight: 900; -fx-text-fill: #1e40af;"
+                       wrapText="true"
+                       style="-fx-font-size: 48px; -fx-font-weight: 900; -fx-text-fill: #1e40af;"
                        text="Elephant" />
             </StackPane>
 

@@ -36,6 +36,9 @@ public class MainMenuController {
         Message message = new Message("C_ONLINE_COUNT", null); 
         networkClient.sendMessage(message);
 
+        Message message2 = new Message("C_WIN_COUNT", null);
+        networkClient.sendMessage(message2);
+
         Player currentPlayer = ClientState.getInstance().getCurrentPlayer();
         updatePlayerStats(currentPlayer);
     }

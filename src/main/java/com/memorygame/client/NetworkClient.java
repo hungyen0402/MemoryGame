@@ -13,7 +13,7 @@ import com.memorygame.common.Message;
 import javafx.application.Platform;
 
 public class NetworkClient {
-    private static final String HOST = "localhost";
+    private static final String HOST = "26.50.81.136";
     private static final int PORT = 6789;
     private NetworkClient() {}
     // Thêm ngay dưới class

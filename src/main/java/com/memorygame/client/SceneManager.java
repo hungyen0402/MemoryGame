@@ -202,6 +202,8 @@ public class SceneManager implements NetworkClient.MessageListener {
         else if (currentController instanceof MainMenuController c) {
             if (type.equals("S_ONLINE_COUNT")) {
                 c.updateOnlineCount((int) payload);
+            } else if (type.equals("S_WIN_COUNT")) {
+                c.updatePlayerStats((Player) payload);
             }
         }
         

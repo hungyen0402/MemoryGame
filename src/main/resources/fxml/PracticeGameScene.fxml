@@ -100,8 +100,9 @@
                     -fx-min-height: 250;                               
                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 40, 0.1, 0, 15);">
                        
-                <Label fx:id="lblWord" 
-                       style="-fx-font-size: 72px; 
+                <Label fx:id="lblWord"
+                       wrapText="true"
+                       style="-fx-font-size: 48px; 
                               -fx-font-weight: 900; 
                               -fx-text-fill: #1e40af;"
                        text="Elephant" />
